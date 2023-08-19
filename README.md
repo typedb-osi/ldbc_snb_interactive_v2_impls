@@ -12,7 +12,7 @@ The Interactive workload is currently being renewed to accommodate new features 
 If you are looking for a stable, auditable version, use the v1.x releases.
 
 * [Branch `v1-dev`](https://github.com/ldbc/ldbc_snb_interactive_impls/tree/v1-dev): the current stable implementation with read and insert operations. Scales up to SF1k. Stable release: [1.0.0](https://github.com/ldbc/ldbc_snb_interactive_impls/releases/tag/1.0.0).
-* [Branch `main`](https://github.com/ldbc/ldbc_snb_interactive_impls/tree/main): this version includes delete operations and a new parameter generator. Will scale to SF30k and beyond.
+* [Branch `v2-dev`](https://github.com/ldbc/ldbc_snb_interactive_impls/tree/v2-dev): this version includes delete operations and a new parameter generator. Will scale to SF30k and beyond.
 
 ## Notes
 
