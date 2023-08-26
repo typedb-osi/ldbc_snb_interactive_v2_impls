@@ -16,7 +16,7 @@ If you are looking for a stable, auditable version, use the v1.x releases.
 
 ## Notes
 
-:warning: There are some quirks to using this repository:
+:warning: Please keep in mind the following when using this repository.
 
 * The goal of the implementations in this repository is to serve as **reference implementations** which other implementations can cross-validated against. Therefore, our primary objective was readability and not absolute performance when formulating the queries.
 
