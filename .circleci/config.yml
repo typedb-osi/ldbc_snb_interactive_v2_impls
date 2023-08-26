@@ -55,8 +55,8 @@ jobs:
       - run:
           name: Convert SF0.003 update streams
           command: |
-            git clone https://github.com/ldbc/ldbc_snb_interactive_driver
-            cd ldbc_snb_interactive_driver/scripts/
+            git clone https://github.com/ldbc/ldbc_snb_interactive_v2_driver
+            cd ldbc_snb_interactive_v2_driver/scripts/
             ./install-dependencies.sh
             export LDBC_SNB_DATA_ROOT_DIRECTORY=../../social-network-sf0.003-bi-composite-merged-fk
             ./convert.sh
@@ -67,7 +67,7 @@ jobs:
           name: Generate parameters for SF0.003
           command: |
             export LDBC_SNB_IMPLS_DIR=$(pwd)
-            cd ldbc_snb_interactive_driver/paramgen
+            cd ldbc_snb_interactive_v2_driver/paramgen
             scripts/get-sample-data.sh
             . scripts/use-sample-data.sh
             mv paramgen_window_values.json paramgen_window_values.bak.json
@@ -199,7 +199,7 @@ jobs:
           command: |
             export LDBC_SNB_DATAGEN_DIR=`pwd`
             export DATA_INPUT_TYPE=csv
-            export LDBC_SNB_DRIVER_DIR=`pwd`/ldbc_snb_interactive_driver
+            export LDBC_SNB_DRIVER_DIR=`pwd`/ldbc_snb_interactive_v2_driver
             export LDBC_SNB_DATAGEN_MAX_MEM=8G
             export USE_DATAGEN_DOCKER=true
             export SF=1
