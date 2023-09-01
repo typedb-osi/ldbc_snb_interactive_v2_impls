@@ -8,6 +8,15 @@ set -o pipefail
 cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd ..
 
+echo "==============================================================================="
+echo "Generating data for SNB Interactive v2"
+echo "-------------------------------------------------------------------------------"
+echo "SF: ${SF}"
+echo "LDBC_SNB_DRIVER_DIR: ${LDBC_SNB_DRIVER_DIR}"
+echo "LDBC_SNB_DATAGEN_DIR: ${LDBC_SNB_DATAGEN_DIR}"
+echo "LDBC_SNB_DATAGEN_MAX_MEM: ${LDBC_SNB_DATAGEN_MAX_MEM}"
+echo "-------------------------------------------------------------------------------"
+
 export LDBC_SNB_IMPLS_DIR=`pwd`
 
 USE_DATAGEN_DOCKER=${USE_DATAGEN_DOCKER:-false}
