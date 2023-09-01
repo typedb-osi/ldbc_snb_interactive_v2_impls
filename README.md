@@ -7,13 +7,6 @@ This repository contains reference implementations of the LDBC Social Network Be
 
 To get started with the LDBC SNB benchmarks, check out our introductory presentation: [The LDBC Social Network Benchmark](https://docs.google.com/presentation/d/1NilxSrKQnFq4WzWMY2-OodZQ2TEksKzKBmgB20C_0Nw/) ([PDF](https://ldbcouncil.org/docs/presentations/ldbc-snb-2022-11.pdf)).
 
-:warning:
-The Interactive workload is currently being renewed to accommodate new features such as deletions and larger scale factors.
-If you are looking for a stable, auditable version, use the v1.x releases.
-
-* [Branch `v1-dev`](https://github.com/ldbc/ldbc_snb_interactive_impls/tree/v1-dev): the current stable implementation with read and insert operations. Scales up to SF1k. Stable release: [1.0.0](https://github.com/ldbc/ldbc_snb_interactive_impls/releases/tag/1.0.0).
-* [Branch `v2-dev`](https://github.com/ldbc/ldbc_snb_interactive_impls/tree/v2-dev): this version includes delete operations and a new parameter generator. Will scale to SF30k and beyond.
-
 ## Notes
 
 :warning: Please keep in mind the following when using this repository.
@@ -136,7 +129,7 @@ The implementation process looks roughly as follows:
 ## Preparing for an audited run
 
 Implementations of the Interactive workload can be audited by a certified LDBC auditor.
-The [Auditing Policies chapter](https://ldbcouncil.org/ldbc_snb_docs/ldbc-snb-specification.pdf#chapter.7) of the specification describes the auditing process and the required artifacts.
+The [Auditing Policies chapter of the specification](https://ldbcouncil.org/ldbc_snb_docs/ldbc-snb-specification.pdf) describes the auditing process and the required artifacts.
 
 If you plan to get your system audited, please reach to the [LDBC Steering Committee](https://ldbcouncil.org/organizational-members/).
 
