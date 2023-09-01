@@ -97,7 +97,6 @@ mv deletes/ ${LDBC_SNB_IMPLS_DIR}/update-streams-sf${SF}/
 echo "==================== Generate parameters ===================="
 cd ${LDBC_SNB_DRIVER_DIR}/paramgen
 export LDBC_SNB_DATA_ROOT_DIRECTORY=${LDBC_SNB_DATAGEN_DIR}/out-sf${SF}/
-export LDBC_SNB_FACTOR_TABLES_DIR=${LDBC_SNB_DATA_ROOT_DIRECTORY}/factors/parquet/raw/composite-merged-fk/
 
 if [[ $SF < 1 ]]
 then
@@ -106,15 +105,15 @@ else
   export LDBC_THRESHOLD_VALUE_FILE='paramgen_window_values.json'
 fi
 
-echo $LDBC_THRESHOLD_VALUE_FILE
-
-# paramgen/scripts/paramgen.sh
+# https://github.com/ldbc/ldbc_snb_datagen_spark/issues/429
+# Instead of using the scripts/paramgen.sh script, we call paramgen manually
+# and parameterize it with the ${LDBC_THRESHOLD_VALUE_FILE} file
 python3 paramgen.py \
---raw_parquet_dir "${LDBC_SNB_DATA_ROOT_DIRECTORY}/graphs/parquet/raw/" \
---factor_tables_dir "${LDBC_SNB_FACTOR_TABLES_DIR}" \
---time_bucket_size_in_days 1 \
---generate_short_query_parameters True \
---threshold_values_path ${LDBC_THRESHOLD_VALUE_FILE}
+  --raw_parquet_dir "${LDBC_SNB_DATA_ROOT_DIRECTORY}/graphs/parquet/raw/" \
+  --factor_tables_dir "${LDBC_SNB_FACTOR_TABLES_DIR}" \
+  --time_bucket_size_in_days 1 \
+  --generate_short_query_parameters True \
+  --threshold_values_path ${LDBC_THRESHOLD_VALUE_FILE}
 
 cd ..
 
