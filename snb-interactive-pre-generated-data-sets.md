@@ -59,15 +59,17 @@ This command works on both standalone files (`.tar.zst`) and chunked ones (`.tar
 
 ### Factor tables
 
-* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/bi-pre-audit/factors/factors-sf1.tar.zst
-* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/bi-pre-audit/factors/factors-sf3.tar.zst
-* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/bi-pre-audit/factors/factors-sf10.tar.zst
-* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/bi-pre-audit/factors/factors-sf30.tar.zst
-* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/bi-pre-audit/factors/factors-sf100.tar.zst
-* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/bi-pre-audit/factors/factors-sf300.tar.zst
-* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/bi-pre-audit/factors/factors-sf1000.tar.zst
-* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/bi-pre-audit/factors/factors-sf3000.tar.zst
-* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/bi-pre-audit/factors/factors-sf10000.tar.zst
+* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/snb-factors/snb-sf1-factors.tar.zst
+* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/snb-factors/snb-sf3-factors.tar.zst
+* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/snb-factors/snb-sf10-factors.tar.zst
+* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/snb-factors/snb-sf30-factors.tar.zst
+* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/snb-factors/snb-sf100-factors.tar.zst
+* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/snb-factors/snb-sf300-factors.tar.zst
+* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/snb-factors/snb-sf1000-factors.tar.zst
+* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/snb-factors/snb-sf3000-factors.tar.zst
+* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/snb-factors/snb-sf10000-factors.tar.zst
+* https://pub-383410a98aef4cb686f0c7601eddd25f.r2.dev/snb-factors/snb-sf30000-factors.tar.zst
+
 
 ### Parameters (deprecated)
 
