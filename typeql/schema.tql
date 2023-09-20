@@ -1,0 +1,218 @@
+define 
+
+#entities
+
+City sub Place,
+    plays isLocatedIn:locatedIn,
+    plays isPartOf:part;
+
+Country sub Place,
+    plays isLocatedIn:locatedIn,
+    plays isPartOf:part,
+    plays isPartOf:partOf;
+
+Continent sub Place,
+    plays isPartOf:partOf;
+
+Place sub entity,
+    abstract,
+    owns id @key,
+    owns name,
+    owns url;
+
+Comment sub Message,
+    plays replyOf:reply;
+
+Post sub Message,
+    owns imageFile,
+    owns language,
+    plays containerOf:contain;
+
+Message sub entity,
+    abstract,
+    owns id @key,
+    owns browserUsed,
+    owns creationDate,
+    owns locationIP,
+    owns content,
+    owns length,
+    plays hasCreator:created,
+    plays hasTag:tagged,
+    plays isLocatedIn:location,
+    plays likes:message,
+    plays replyOf:repliedTo;
+
+
+Organisation sub entity,
+    abstract,
+    owns id @key,
+    owns name,
+    owns url;
+
+University sub Organisation,
+    plays isLocatedIn:location,
+    plays studyAt:university;
+
+Company sub Organisation,
+    plays isLocatedIn:location,
+    plays workAt:employer;
+
+Forum sub entity,
+    owns id @key,
+    owns title,
+    owns creationDate,
+    plays containerOf:contain,
+    plays hasMember:memberOf,
+    plays hasModerator:moderated,
+    plays hasTag:tagged;
+
+Person sub entity,
+    owns id @key,
+    owns firstName,
+    owns lastName,
+    owns gender,
+    owns birthday,
+    owns email,
+    owns speaks,
+    owns browserUsed,
+    owns locationIP,
+    owns creationDate,
+    plays hasCreator:creator,
+    plays hasInterest:interested,
+    plays hasMember:member,
+    plays hasModerator:moderator,
+    plays isLocatedIn:location,
+    plays knows:person,
+    plays likes:person,
+    plays studyAt:student,
+    plays workAt:employee;
+
+Tag sub entity,
+    owns id @key,
+    owns name,
+    owns url,
+    plays hasInterest:interests,
+    plays hasTag:tag,
+    plays hasType:tag;
+
+TagClass sub entity,
+    owns id @key,
+    owns name,
+    owns url,
+    plays hasType:tagClass,
+    plays isSubclassOf:subclass;
+
+#attributes
+
+name sub attribute,
+    value string;
+    
+id sub attribute,
+    value long;
+
+firstName sub attribute,
+    value string;
+
+lastName sub attribute,
+    value string;
+
+gender sub attribute,
+    value string;
+
+birthday sub attribute,
+    value datetime;
+
+speaks sub attribute,
+    value string;
+
+email sub attribute,
+    value string;
+
+url sub attribute,
+    value string;
+
+browserUsed sub attribute,
+    value string;
+
+locationIP sub attribute,
+    value string;
+
+content sub attribute,
+    value string;
+
+length sub attribute,
+    value long;
+
+title sub attribute,
+    value string;
+
+creationDate sub attribute,
+    value datetime;
+
+language sub attribute,
+    value string;
+
+imageFile sub attribute,
+    value string;
+
+
+#relations
+
+containerOf sub relation,
+    relates contain,
+    relates container;
+
+hasCreator sub relation,
+    relates creator,
+    relates created;
+
+hasInterest sub relation,
+    relates interested,
+    relates interests;
+
+hasMember sub relation,
+    relates member,
+    relates memberOf;
+
+hasModerator sub relation,
+    relates moderator,
+    relates moderated;
+
+hasTag sub relation,
+    relates tag,
+    relates tagged;
+
+hasType sub relation,
+    relates tag,
+    relates tagClass;
+
+isLocatedIn sub relation,
+    relates location,
+    relates locatedIn;
+
+isPartOf sub relation,
+    relates part,
+    relates partOf;
+
+isSubclassOf sub relation,
+    relates subclass,
+    relates superclass;
+
+knows sub relation,
+    relates person;
+
+likes sub relation,
+    relates person,
+    relates message;
+
+replyOf sub relation,
+    relates reply,
+    relates repliedTo;
+
+studyAt sub relation,
+    relates student,
+    relates university;
+
+workAt sub relation,
+    relates employee,
+    relates employer;

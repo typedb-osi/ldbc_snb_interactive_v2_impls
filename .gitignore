@@ -30,3 +30,5 @@ parameters-sf*.*
 update-streams-sf*/
 update-streams-sf*.*
 initial-snapshot/*
+
+postgres/data/**
