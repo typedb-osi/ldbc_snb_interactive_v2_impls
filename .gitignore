@@ -32,3 +32,4 @@ update-streams-sf*.*
 initial-snapshot/*
 
 postgres/data/**
+typeql/data/**
