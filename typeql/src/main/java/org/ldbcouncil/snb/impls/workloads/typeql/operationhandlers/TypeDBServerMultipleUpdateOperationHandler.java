@@ -7,10 +7,6 @@ import org.ldbcouncil.snb.driver.workloads.interactive.queries.LdbcNoResult;
 import org.ldbcouncil.snb.impls.workloads.operationhandlers.MultipleUpdateOperationHandler;
 import org.ldbcouncil.snb.impls.workloads.typeql.TypeDBServerDbConnectionState;
 
-// import java.TypeDB.Connection;
-// import java.sql.SQLException;
-// import java.sql.Statement;
-// import java.util.List;
 
 public abstract class TypeDBServerMultipleUpdateOperationHandler<TOperation extends Operation<LdbcNoResult>>
         implements MultipleUpdateOperationHandler<TOperation, TypeDBServerDbConnectionState> {
@@ -18,27 +14,5 @@ public abstract class TypeDBServerMultipleUpdateOperationHandler<TOperation exte
     @Override
     public void executeOperation(TOperation operation, TypeDBServerDbConnectionState state,
                                  ResultReporter resultReporter) throws DbException {
-        try {
-            Connection conn = state.getConnection();
-            try {
-                List<String> queryStrings = getQueryString(state, operation);
-                for (String queryString : queryStrings) {
-                    Statement stmt = conn.createStatement();
-                    state.logQuery(operation.getClass().getSimpleName(), queryString);
-                    stmt.execute(queryString);
-                    stmt.close();
-                }
-            }
-            catch (TypeDBException e) {
-                throw new DbException(e);
-            }
-            finally {
-                conn.close();
-            }
-            resultReporter.report(0, LdbcNoResult.INSTANCE, operation);
-        } 
-        catch (TypeDBException e) {
-            throw new DbException(e);
-        }
     }
 }
