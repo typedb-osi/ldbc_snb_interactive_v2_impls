@@ -84,6 +84,7 @@
                 <module>mssql</module>
                 <module>postgres</module>
                 <module>umbra</module>
+                <module>typeql</module>
           </modules>
         </profile>
         <profile>
@@ -110,6 +111,12 @@
                 <module>umbra</module>
             </modules>
         </profile>
+        <profile>
+            <id>typeql</id>
+            <modules>
+                <module>typeql</module>
+            </modules>
+    </profile>
     </profiles>
 
 </project>

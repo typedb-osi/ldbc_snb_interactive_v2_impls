@@ -1,4 +1,5 @@
 ![LDBC logo](ldbc-logo.png)
+
 # LDBC SNB Interactive workload implementations
 
 [![Build Status](https://circleci.com/gh/ldbc/ldbc_snb_interactive_impls.svg?style=svg)](https://circleci.com/gh/ldbc/ldbc_snb_interactive_impls)
@@ -32,6 +33,7 @@ For detailed instructions, consult the READMEs of the projects.
 ## User's guide
 
 ### Building the project
+
 This project uses Java 17.
 
 To build the entire project, run:

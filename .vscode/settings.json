@@ -3,5 +3,6 @@
     "python.analysis.typeCheckingMode": "off",
     "githubPullRequests.ignoredPullRequestBranches": [
         "main"
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

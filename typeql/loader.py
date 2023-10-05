@@ -9,7 +9,7 @@ from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
 import threading
 
-ROOT = r"C:\Users\diptu\OneDrive\Desktop\Projects\ldbc_snb_interactive_v2_impls"
+ROOT = os.getcwd()
 
 def load_place(client):
 
@@ -29,21 +29,21 @@ def load_place(client):
         """
         return query
 
+    file_path = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "static", "Place", "part-00000-ddd5cd4b-94d2-48fa-b9c6-e5562a00dbd1-c000.csv")
+
     with client.session("ldbcsnb", SessionType.DATA) as session:
-        # First Pass: Insert entities and attributes
-        with open(rf"{ROOT}\typeql\data\out-sf1\graphs\csv\bi\composite-merged-fk\initial_snapshot\static\Place\part-00000-ddd5cd4b-94d2-48fa-b9c6-e5562a00dbd1-c000.csv", encoding='utf-8') as csv_file:
+        # First Pass: Insert entities and attributes        
+        with open(file_path, encoding='utf-8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter='|')
             next(csv_reader)  # Skip the header
 
             with session.transaction(TransactionType.WRITE) as tx:
                 for row in csv_reader:
                     tx.query().insert(insert_data(session, row))
-                    pass
                 tx.commit()
                 
-
         # Second Pass: Insert relations
-        with open(rf"{ROOT}\typeql\data\out-sf1\graphs\csv\bi\composite-merged-fk\initial_snapshot\static\Place\part-00000-ddd5cd4b-94d2-48fa-b9c6-e5562a00dbd1-c000.csv", encoding='utf-8') as csv_file:
+        with open(file_path, encoding='utf-8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter='|')
             next(csv_reader)  # Skip the header
 
@@ -51,12 +51,14 @@ def load_place(client):
                 for row in csv_reader:
                     if row[4]:
                         tx.query().insert(insert_relations(session, row))
-                        pass
                 tx.commit()
+
                 
 def load_organization(client):
+    file_path = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "static", "Organisation", "part-00000-58ae3f1c-7003-4813-88aa-0303fc36ac88-c000.csv")
+
     with client.session("ldbcsnb", SessionType.DATA) as session:
-        with open(rf"{ROOT}\typeql\data\out-sf1\graphs\csv\bi\composite-merged-fk\initial_snapshot\static\Organisation\part-00000-58ae3f1c-7003-4813-88aa-0303fc36ac88-c000.csv", encoding='utf-8') as csv_file:
+        with open(file_path, encoding='utf-8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter='|')
             next(csv_reader)  # Skip the header
             with session.transaction(TransactionType.WRITE) as tx:
@@ -105,9 +107,11 @@ def load_tagclass(client):
             tx.query().insert(subclass_relation_query)
 
     # Load the tagclasses, their attributes, and their relations
+    file_path = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "static", "TagClass", "part-00000-8356e4f5-0cd4-47c4-914c-969f94eb560e-c000.csv")
+    
     with client.session("ldbcsnb", SessionType.DATA) as session:
         with session.transaction(TransactionType.WRITE) as tx:
-            with open(rf"{ROOT}\typeql\data\out-sf1\graphs\csv\bi\composite-merged-fk\initial_snapshot\static\TagClass\part-00000-8356e4f5-0cd4-47c4-914c-969f94eb560e-c000.csv", encoding='utf-8') as csv_file:
+            with open(file_path, encoding='utf-8') as csv_file:
                 csv_reader = csv.reader(csv_file, delimiter='|')
                 next(csv_reader)  # Skip the header
                 
@@ -125,8 +129,11 @@ def load_tagclass(client):
             tx.commit()
             
 def load_tags(client, batch_size=1000):
+
+    file_path = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "static", "Tag", "part-00000-a6cdb0d8-5e36-4985-aea2-9e816a7fcaad-c000.csv")
+
     with client.session("ldbcsnb", SessionType.DATA) as session:
-        with open(rf"{ROOT}\typeql\data\out-sf1\graphs\csv\bi\composite-merged-fk\initial_snapshot\static\Tag\part-00000-a6cdb0d8-5e36-4985-aea2-9e816a7fcaad-c000.csv", encoding='utf-8') as csv_file:
+        with open(file_path, encoding='utf-8') as csv_file:
             csv_reader = csv.reader(csv_file, delimiter='|')
             next(csv_reader)  # Skip the header
 
@@ -167,9 +174,9 @@ def count_rows_in_directory(directory):
   
               
 def load_person(client, batch_size=5000):
-    with client.session("ldbcsnb", SessionType.DATA) as session:
-        directory = rf"{ROOT}\typeql\data\out-sf1\graphs\csv\bi\composite-merged-fk\initial_snapshot\dynamic\Person"
+    directory = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic", "Person")
 
+    with client.session("ldbcsnb", SessionType.DATA) as session:
         for filename in os.listdir(directory):
             if filename.endswith('.csv'):
                 filepath = os.path.join(directory, filename)
@@ -177,21 +184,16 @@ def load_person(client, batch_size=5000):
                     csv_reader = csv.reader(csv_file, delimiter='|')
                     next(csv_reader)  # Skip the header
 
-                    processed_rows = 0
-                    tx = session.transaction(TransactionType.WRITE)  # Start the first transaction
-                    
+                    queries = []
                     for row in csv_reader:
                         # Parse and format the creation date
                         creation_date = datetime.fromisoformat(row[0])
                         formatted_date = creation_date.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]
 
-                        emails = row[10].split(';')
-                        email_query = " ".join([f'has email "{email}",' for email in emails])
+                        email_query = " ".join([f'has email "{email}",' for email in row[10].split(';')])
+                        language_query = " ".join([f'has speaks "{lang}",' for lang in row[9].split(';')])
 
-                        languages = row[9].split(';')
-                        language_query = " ".join([f'has speaks "{lang}",' for lang in languages])
-
-                        # Construct the insert query for the person, its attributes, and its isLocatedIn relation
+                        # Construct the insert query
                         query = f'''
                         match
                             $city isa City, has id {row[8]};
@@ -209,20 +211,22 @@ def load_person(client, batch_size=5000):
                                 has creationDate {formatted_date};
                             (location: $person, locatedIn: $city) isa isLocatedIn;
                         '''
-                        tx.query().insert(query)
-                        
-                        processed_rows += 1
-                        
-                        # Commit and start a new transaction if batch size is reached
-                        if processed_rows % batch_size == 0:
-                            tx.commit()
-                            
-                            tx = session.transaction(TransactionType.WRITE)
-                    
-                    # Commit the last batch if there are any remaining rows
-                    if processed_rows % batch_size != 0:
-                        tx.commit()
+                        queries.append(query)
 
+                        # If batch size is reached, execute the queries and clear the list
+                        if len(queries) == batch_size:
+                            with session.transaction(TransactionType.WRITE) as tx:
+                                for q in queries:
+                                    tx.query().insert(q)
+                                tx.commit()
+                            queries.clear()
+
+                    # If there are remaining queries, execute them
+                    if queries:
+                        with session.transaction(TransactionType.WRITE) as tx:
+                            for q in queries:
+                                tx.query().insert(q)
+                            tx.commit()
 
 def process_file(filename, client, directory, batch_size, pbar, pbar_lock):
     filepath = os.path.join(directory, filename)
@@ -242,7 +246,7 @@ def process_file(filename, client, directory, batch_size, pbar, pbar_lock):
 
                 # Construct the insert query for the forum, its attributes, and its hasModerator relation
                 query = f'''
-                match
+                match   
                     $moderator isa Person, has id {row[3]};
                 insert
                     $forum isa Forum,
@@ -273,7 +277,7 @@ def process_file(filename, client, directory, batch_size, pbar, pbar_lock):
     return processed_rows
 
 def load_forum(client, batch_size=10000):
-    directory = rf"{ROOT}\typeql\data\out-sf1\graphs\csv\bi\composite-merged-fk\initial_snapshot\dynamic\Forum"
+    directory = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic", "Forum")
     
     # Estimate total rows (this is a rough estimate, assuming average file sizes)
     total_rows = count_rows_in_directory(directory)
@@ -293,7 +297,7 @@ def load_forum(client, batch_size=10000):
 
 def load_posts(client, batch_size=10000):
     with client.session("ldbcsnb", SessionType.DATA) as session:
-        directory = rf"{ROOT}\typeql\data\out-sf1\graphs\csv\bi\composite-merged-fk\initial_snapshot\dynamic\Post"
+        directory = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic", "Post")
         
         # Estimate total rows (this is a rough estimate, assuming average file sizes)
         total_rows = count_rows_in_directory(directory)
@@ -355,7 +359,8 @@ def load_posts(client, batch_size=10000):
 
 def load_comments(client, batch_size=10000):
     with client.session("ldbcsnb", SessionType.DATA) as session:
-        directory = rf"{ROOT}\typeql\data\out-sf1\graphs\csv\bi\composite-merged-fk\initial_snapshot\dynamic\Comment"
+        directory = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic", "Comment")
+
         
         # Estimate total rows (this is a rough estimate, assuming average file sizes)
         total_rows = count_rows_in_directory(directory)
@@ -899,46 +904,46 @@ def load_post_hasTag_tag(client, directory, batch_size=1000):
     pbar.close()
 
 def load_relations(client, start_time):
-    ROOT_DYNAMIC = rf"{ROOT}\typeql\data\out-sf1\graphs\csv\bi\composite-merged-fk\initial_snapshot\dynamic"
-
+    ROOT_DYNAMIC = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic")
+    batchsize = 10000
     # Load Comment_hasTag_Tag
-    load_comment_hasTag_Tag(client, os.path.join(ROOT_DYNAMIC, "Comment_hasTag_Tag"))
+    load_comment_hasTag_Tag(client, os.path.join(ROOT_DYNAMIC, "Comment_hasTag_Tag"),batchsize)
     print_elapsed_time(start_time, "Loaded Comment_hasTag_Tag")
 
     # Load Forum_hasMember_Person
-    load_forum_hasMember_Person(client, os.path.join(ROOT_DYNAMIC, "Forum_hasMember_Person"))
+    load_forum_hasMember_Person(client, os.path.join(ROOT_DYNAMIC, "Forum_hasMember_Person"),batchsize)
     print_elapsed_time(start_time, "Loaded Forum_hasMember_Person")
 
     # Load Forum_hasTag_Tag
-    load_forum_hasTag_Tag(client, os.path.join(ROOT_DYNAMIC, "Forum_hasTag_Tag"))
+    load_forum_hasTag_Tag(client, os.path.join(ROOT_DYNAMIC, "Forum_hasTag_Tag"),batchsize)
     print_elapsed_time(start_time, "Loaded Forum_hasTag_Tag")
 
     # Load Person_hasInterest_Tag
-    load_person_hasInterest_Tag(client, os.path.join(ROOT_DYNAMIC, "Person_hasInterest_Tag"))
+    load_person_hasInterest_Tag(client, os.path.join(ROOT_DYNAMIC, "Person_hasInterest_Tag"),batchsize)
     print_elapsed_time(start_time, "Loaded Person_hasInterest_Tag")
 
     # Load Person_knows_Person
-    load_person_knows_person(client, os.path.join(ROOT_DYNAMIC, "Person_knows_Person"))
+    load_person_knows_person(client, os.path.join(ROOT_DYNAMIC, "Person_knows_Person"),batchsize)
     print_elapsed_time(start_time, "Loaded Person_knows_Person")
 
     # Load Person_likes_Comment
-    load_person_likes_comment(client, os.path.join(ROOT_DYNAMIC, "Person_likes_Comment"))
+    load_person_likes_comment(client, os.path.join(ROOT_DYNAMIC, "Person_likes_Comment"),batchsize)
     print_elapsed_time(start_time, "Loaded Person_likes_Comment")
 
     # Load Person_likes_Post
-    load_person_likes_post(client, os.path.join(ROOT_DYNAMIC, "Person_likes_Post"))
+    load_person_likes_post(client, os.path.join(ROOT_DYNAMIC, "Person_likes_Post"),batchsize)
     print_elapsed_time(start_time, "Loaded Person_likes_Post")
 
     # Load Person_studyAt_University
-    load_person_studyAt_university(client, os.path.join(ROOT_DYNAMIC, "Person_studyAt_University"))
+    load_person_studyAt_university(client, os.path.join(ROOT_DYNAMIC, "Person_studyAt_University"),batchsize)
     print_elapsed_time(start_time, "Loaded Person_studyAt_University")
 
     # Load Person_workAt_Company
-    load_person_workAt_company(client, os.path.join(ROOT_DYNAMIC, "Person_workAt_Company"))
+    load_person_workAt_company(client, os.path.join(ROOT_DYNAMIC, "Person_workAt_Company"),batchsize)
     print_elapsed_time(start_time, "Loaded Person_workAt_Company")
 
     # Load Post_hasTag_Tag
-    load_post_hasTag_tag(client, os.path.join(ROOT_DYNAMIC, "Post_hasTag_Tag"))
+    load_post_hasTag_tag(client, os.path.join(ROOT_DYNAMIC, "Post_hasTag_Tag"),batchsize)
     print_elapsed_time(start_time, "Loaded Post_hasTag_Tag")
 
 def print_elapsed_time(start_time, message):
@@ -973,23 +978,23 @@ def main():
         load_tagclass(client)
         print_elapsed_time(start_time, "Loaded TagClass")
         
-        load_tags(client, 5000)
+        load_tags(client, 10000)
         print_elapsed_time(start_time, "Loaded Tags")
 
         print_elapsed_time(start_time, "Loaded Static Data")        
         
         # dynamic
         
-        load_person(client, 5000)
+        load_person(client, 10000)
         print_elapsed_time(start_time, "Loaded Person")
 
-        load_forum(client, 5000)
+        load_forum(client, 10000)
         print_elapsed_time(start_time, "Loaded Forum")
         
-        load_posts(client,5000)
+        load_posts(client,10000)
         print_elapsed_time(start_time, "Loaded Posts") 
         
-        load_comments(client)
+        load_comments(client, 10000)
         print_elapsed_time(start_time, "Loaded Comments")
         
         load_relations(client, start_time)

@@ -33,3 +33,5 @@ initial-snapshot/*
 
 postgres/data/**
 typeql/data/**
+snb-out-sf1-merged-fk.tar
+snb-out-sf1-merged-fk.tar.zst
