@@ -3,11 +3,11 @@ package org.ldbcouncil.snb.impls.workloads.typeql.interactive;
 import org.ldbcouncil.snb.driver.DbException;
 import org.ldbcouncil.snb.driver.control.LoggingService;
 import org.ldbcouncil.snb.driver.workloads.interactive.queries.*;
-import org.ldbcouncil.snb.impls.workloads.typeql.TypeDBServerDb;
+import org.ldbcouncil.snb.impls.workloads.typeql.TypeQLDb;
 
 import java.util.Map;
 
-public class TypeDBServerInteractiveDb extends TypeDBServerDb {
+public class TypeQLInteractiveDb extends TypeQLDb {
 
     @Override
     protected void onInit(Map<String, String> properties, LoggingService loggingService) throws DbException {

@@ -9,14 +9,14 @@ import org.ldbcouncil.snb.driver.workloads.interactive.queries.LdbcInsert7AddCom
 import org.ldbcouncil.snb.impls.workloads.QueryStore;
 import org.ldbcouncil.snb.impls.workloads.QueryType;
 import org.ldbcouncil.snb.impls.workloads.converter.Converter;
-import org.ldbcouncil.snb.impls.workloads.typeql.converter.TypeDBServerConverter;
+import org.ldbcouncil.snb.impls.workloads.typeql.converter.TypeQLConverter;
 
 import com.google.common.collect.ImmutableMap;
 
-public class TypeDBServerQueryStore extends QueryStore {
+public class TypeQLQueryStore extends QueryStore {
 
     protected Converter getConverter() {
-        return new TypeDBServerConverter();
+        return new TypeQLConverter();
     }
 
     @Override
@@ -24,7 +24,7 @@ public class TypeDBServerQueryStore extends QueryStore {
         return ":";
     }
 
-    public TypeDBServerQueryStore(String path) throws DbException {
+    public TypeQLQueryStore(String path) throws DbException {
         super(path, ".TypeDB");
     }
 

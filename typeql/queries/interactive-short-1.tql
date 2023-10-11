@@ -14,7 +14,7 @@ match
     $y (location: $p, locatedIn: $c) isa isLocatedIn;
     $c isa City, has id $c-id;
 
-get 
+get
     $fn, $ln, $bd, $ip, $bu, $oc-id, $g, $cd;
 
 
