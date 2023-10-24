@@ -1,31 +1,27 @@
-SELECT TOP(10) name, count(*) AS postcount
-FROM
-    Tag,
-    Message_hasTag_Tag,
-    Message,
-    (
-        SELECT Person2Id
-        FROM Person_knows_Person
-        WHERE Person1Id = :personId
-        UNION
-        SELECT k2.Person2Id
-        FROM Person_knows_Person k1, Person_knows_Person k2
-        WHERE k1.Person1Id = :personId
-          AND k1.Person2Id = k2.Person1Id
-          AND k2.Person2Id <> :personId
-    ) friend
-WHERE CreatorPersonId = friend.Person2Id
-  AND ParentMessageId IS NULL -- post, not comment
-  AND Message.MessageId = Message_hasTag_Tag.MessageId
-  AND Message_hasTag_Tag.TagId = Tag.id
-  AND name <> :tagName
-  AND EXISTS (
-          SELECT *
-          FROM Tag, Message_hasTag_Tag
-          WHERE Message.MessageId = Message_hasTag_Tag.MessageId
-            AND Message_hasTag_Tag.TagId = Tag.id
-            AND Tag.name = :tagName
-      )
-GROUP BY name
-ORDER BY postCount DESC, name COLLATE Latin1_General_BIN2;  
-;
+// Q6. Tag co-occurrence
+/*
+:params { personId: 4398046511333, tagName: "Carl_Gustaf_Emil_Mannerheim" }
+*/
+MATCH (knownTag:Tag { name: $tagName })
+WITH knownTag.id as knownTagId
+
+MATCH (person:Person { id: $personId })-[:KNOWS*1..2]-(friend)
+WHERE NOT person=friend
+WITH
+    knownTagId,
+    collect(distinct friend) as friends
+UNWIND friends as f
+    MATCH (f)<-[:HAS_CREATOR]-(post:Post),
+          (post)-[:HAS_TAG]->(t:Tag{id: knownTagId}),
+          (post)-[:HAS_TAG]->(tag:Tag)
+    WHERE NOT t = tag
+    WITH
+        tag.name as tagName,
+        count(post) as postCount
+RETURN
+    tagName,
+    postCount
+ORDER BY
+    postCount DESC,
+    tagName ASC
+LIMIT 10

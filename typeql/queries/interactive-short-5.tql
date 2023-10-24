@@ -1,8 +1,9 @@
-/* IS5. Creator of a message
-\set messageId 824633720985
- */
-SELECT Person.personId, Person.firstName, Person.lastName
-FROM Message, Person
-WHERE Message.MessageId = :messageId
-  AND Message.CreatorPersonId = Person.personId
-;
+// IS5. Creator of a message
+/*
+:params { messageId: 206158431836 }
+*/
+MATCH (m:Message {id:  $messageId })-[:HAS_CREATOR]->(p:Person)
+RETURN
+    p.id AS personId,
+    p.firstName AS firstName,
+    p.lastName AS lastName

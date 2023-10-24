@@ -10,6 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 import threading
 
 ROOT = os.getcwd()
+SF = 0.1
 
 def load_place(client):
 
@@ -29,56 +30,65 @@ def load_place(client):
         """
         return query
 
-    file_path = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "static", "Place", "part-00000-ddd5cd4b-94d2-48fa-b9c6-e5562a00dbd1-c000.csv")
+    directory = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "static", "Place")
 
     with client.session("ldbcsnb", SessionType.DATA) as session:
-        # First Pass: Insert entities and attributes        
-        with open(file_path, encoding='utf-8') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter='|')
-            next(csv_reader)  # Skip the header
+        # First Pass: Insert entities and attributes
+        for filename in os.listdir(directory):
+            if filename.endswith('.csv'):
+                filepath = os.path.join(directory, filename)
+                with open(filepath, encoding='utf-8') as csv_file:     
+                    csv_reader = csv.reader(csv_file, delimiter='|')
+                    next(csv_reader)  # Skip the header
 
-            with session.transaction(TransactionType.WRITE) as tx:
-                for row in csv_reader:
-                    tx.query().insert(insert_data(session, row))
-                tx.commit()
+                    with session.transaction(TransactionType.WRITE) as tx:
+                        for row in csv_reader:
+                            tx.query().insert(insert_data(session, row))
+                        tx.commit()
                 
         # Second Pass: Insert relations
-        with open(file_path, encoding='utf-8') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter='|')
-            next(csv_reader)  # Skip the header
+        for filename in os.listdir(directory):
+            if filename.endswith('.csv'):
+                filepath = os.path.join(directory, filename)
+                with open(filepath, encoding='utf-8') as csv_file:  
+                    csv_reader = csv.reader(csv_file, delimiter='|')
+                    next(csv_reader)  # Skip the header
 
-            with session.transaction(TransactionType.WRITE) as tx:
-                for row in csv_reader:
-                    if row[4]:
-                        tx.query().insert(insert_relations(session, row))
-                tx.commit()
+                    with session.transaction(TransactionType.WRITE) as tx:
+                        for row in csv_reader:
+                            if row[4]:
+                                tx.query().insert(insert_relations(session, row))
+                        tx.commit()
 
                 
 def load_organization(client):
-    file_path = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "static", "Organisation", "part-00000-58ae3f1c-7003-4813-88aa-0303fc36ac88-c000.csv")
+    directory = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "static", "Organisation")
 
     with client.session("ldbcsnb", SessionType.DATA) as session:
-        with open(file_path, encoding='utf-8') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter='|')
-            next(csv_reader)  # Skip the header
-            with session.transaction(TransactionType.WRITE) as tx:
-                for row in csv_reader:
-                    # Determine the specific subtype of Organisation based on the data
-                    organisation_type = row[1]  # It should be either 'University' or 'Company'
-                    
-                    # Construct the insert query based on the schema
-                    query = f'''
-                    match
-                        $place isa Place, has id {row[4]};
-                    insert
-                        $org isa {organisation_type}, 
-                            has id {row[0]}, 
-                            has name "{row[2]}", 
-                            has url "{row[3]}";
-                        (location: $org, locatedIn: $place) isa isLocatedIn;
-                    '''
-                    tx.query().insert(query)
-                tx.commit()
+        for filename in os.listdir(directory):
+            if filename.endswith('.csv'):
+                filepath = os.path.join(directory, filename)
+                with open(filepath, encoding='utf-8') as csv_file:  
+                    csv_reader = csv.reader(csv_file, delimiter='|')
+                    next(csv_reader)  # Skip the header
+                    with session.transaction(TransactionType.WRITE) as tx:
+                        for row in csv_reader:
+                            # Determine the specific subtype of Organisation based on the data
+                            organisation_type = row[1]  # It should be either 'University' or 'Company'
+                            
+                            # Construct the insert query based on the schema
+                            query = f'''
+                            match
+                                $place isa Place, has id {row[4]};
+                            insert
+                                $org isa {organisation_type}, 
+                                    has id {row[0]}, 
+                                    has name "{row[2]}", 
+                                    has url "{row[3]}";
+                                (location: $org, locatedIn: $place) isa isLocatedIn;
+                            '''
+                            tx.query().insert(query)
+                        tx.commit()
 
 def load_tagclass(client):
     def insert_entities_and_attributes(session, row, tx):
@@ -107,63 +117,69 @@ def load_tagclass(client):
             tx.query().insert(subclass_relation_query)
 
     # Load the tagclasses, their attributes, and their relations
-    file_path = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "static", "TagClass", "part-00000-8356e4f5-0cd4-47c4-914c-969f94eb560e-c000.csv")
+    directory = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "static", "TagClass")
     
     with client.session("ldbcsnb", SessionType.DATA) as session:
         with session.transaction(TransactionType.WRITE) as tx:
-            with open(file_path, encoding='utf-8') as csv_file:
-                csv_reader = csv.reader(csv_file, delimiter='|')
-                next(csv_reader)  # Skip the header
-                
-                # First Pass: Insert entities and attributes
-                for row in csv_reader:
-                    insert_entities_and_attributes(session, row, tx)
+            for filename in os.listdir(directory):
+                if  filename.endswith('.csv'):
+                    filepath = os.path.join(directory, filename)
+                    with open(filepath, encoding='utf-8') as csv_file:
+                        csv_reader = csv.reader(csv_file, delimiter='|')
+                        next(csv_reader)  # Skip the header
+                        
+                        # First Pass: Insert entities and attributes
+                        for row in csv_reader:
+                            insert_entities_and_attributes(session, row, tx)
 
-                # Reset the file reader to start from the beginning again
-                csv_file.seek(0)
-                next(csv_reader)  # Skip the header
+                        # Reset the file reader to start from the beginning again
+                        csv_file.seek(0)
+                        next(csv_reader)  # Skip the header
 
-                # Second Pass: Insert relations
-                for row in csv_reader:
-                    insert_relations(session, row, tx)
-            tx.commit()
+                        # Second Pass: Insert relations
+                        for row in csv_reader:
+                            insert_relations(session, row, tx)
+                    tx.commit()
             
 def load_tags(client, batch_size=1000):
 
-    file_path = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "static", "Tag", "part-00000-a6cdb0d8-5e36-4985-aea2-9e816a7fcaad-c000.csv")
+    directory = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "static", "Tag")
 
     with client.session("ldbcsnb", SessionType.DATA) as session:
-        with open(file_path, encoding='utf-8') as csv_file:
-            csv_reader = csv.reader(csv_file, delimiter='|')
-            next(csv_reader)  # Skip the header
+        for filename in os.listdir(directory):
+            if filename.endswith('.csv'):
+                filepath = os.path.join(directory, filename)
+                with open(filepath, encoding='utf-8') as csv_file:
+                    csv_reader = csv.reader(csv_file, delimiter='|')
+                    next(csv_reader)  # Skip the header
 
-            processed_rows = 0
-            tx = session.transaction(TransactionType.WRITE)  # Start the first transaction
-            
-            for row in csv_reader:
-                # Construct the insert query for the tag, its attributes, and its hasType relation
-                query = f'''
-                match
-                    $tagclass isa TagClass, has id {row[3]};
-                insert
-                    $tag isa Tag, 
-                        has id {row[0]}, 
-                        has name "{row[1]}",
-                        has url "{row[2]}";
-                    (tag: $tag, tagClass: $tagclass) isa hasType;
-                '''
-                tx.query().insert(query)
-                
-                processed_rows += 1
-                
-                if processed_rows % batch_size == 0:
-                    tx.commit()
+                    processed_rows = 0
+                    tx = session.transaction(TransactionType.WRITE)  # Start the first transaction
                     
-                    tx = session.transaction(TransactionType.WRITE)
+                    for row in csv_reader:
+                        # Construct the insert query for the tag, its attributes, and its hasType relation
+                        query = f'''
+                        match
+                            $tagclass isa TagClass, has id {row[3]};
+                        insert
+                            $tag isa Tag, 
+                                has id {row[0]}, 
+                                has name "{row[1]}",
+                                has url "{row[2]}";
+                            (tag: $tag, tagClass: $tagclass) isa hasType;
+                        '''
+                        tx.query().insert(query)
+                        
+                        processed_rows += 1
+                        
+                        if processed_rows % batch_size == 0:
+                            tx.commit()
+                            
+                            tx = session.transaction(TransactionType.WRITE)
+                    
+                    if processed_rows % batch_size != 0:
+                        tx.commit()
             
-            if processed_rows % batch_size != 0:
-                tx.commit()
-    
 
 def count_rows_in_directory(directory):
     total_rows = 0
@@ -174,7 +190,7 @@ def count_rows_in_directory(directory):
   
               
 def load_person(client, batch_size=5000):
-    directory = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic", "Person")
+    directory = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic", "Person")
 
     with client.session("ldbcsnb", SessionType.DATA) as session:
         for filename in os.listdir(directory):
@@ -277,7 +293,7 @@ def process_file(filename, client, directory, batch_size, pbar, pbar_lock):
     return processed_rows
 
 def load_forum(client, batch_size=10000):
-    directory = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic", "Forum")
+    directory = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic", "Forum")
     
     # Estimate total rows (this is a rough estimate, assuming average file sizes)
     total_rows = count_rows_in_directory(directory)
@@ -297,7 +313,7 @@ def load_forum(client, batch_size=10000):
 
 def load_posts(client, batch_size=10000):
     with client.session("ldbcsnb", SessionType.DATA) as session:
-        directory = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic", "Post")
+        directory = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic", "Post")
         
         # Estimate total rows (this is a rough estimate, assuming average file sizes)
         total_rows = count_rows_in_directory(directory)
@@ -359,7 +375,7 @@ def load_posts(client, batch_size=10000):
 
 def load_comments(client, batch_size=10000):
     with client.session("ldbcsnb", SessionType.DATA) as session:
-        directory = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic", "Comment")
+        directory = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic", "Comment")
 
         
         # Estimate total rows (this is a rough estimate, assuming average file sizes)
@@ -904,7 +920,7 @@ def load_post_hasTag_tag(client, directory, batch_size=1000):
     pbar.close()
 
 def load_relations(client, start_time):
-    ROOT_DYNAMIC = os.path.join(ROOT, "data", "out-sf1", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic")
+    ROOT_DYNAMIC = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic")
     batchsize = 10000
     # Load Comment_hasTag_Tag
     load_comment_hasTag_Tag(client, os.path.join(ROOT_DYNAMIC, "Comment_hasTag_Tag"),batchsize)

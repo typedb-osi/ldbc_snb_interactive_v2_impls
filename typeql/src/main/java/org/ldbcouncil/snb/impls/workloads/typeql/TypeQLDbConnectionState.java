@@ -4,9 +4,11 @@ import org.ldbcouncil.snb.driver.DbException;
 import org.ldbcouncil.snb.impls.workloads.BaseDbConnectionState;
 import org.ldbcouncil.snb.impls.workloads.QueryStore;
 
+import com.google.protobuf.Type;
 import com.vaticle.typedb.client.TypeDB;
 import com.vaticle.typedb.client.api.TypeDBClient;
 import com.vaticle.typedb.client.api.TypeDBSession;
+import com.vaticle.typedb.client.api.TypeDBTransaction;
 
 import java.util.Map;
 
@@ -14,29 +16,42 @@ public class TypeQLDbConnectionState<TDbQueryStore extends QueryStore> extends B
 
     private TypeDBClient client;
     private TypeDBSession session;
+    private String dbName;
+    private String endpoint;
+    private int parallelisation;
 
     public TypeQLDbConnectionState(Map<String, String> properties, TDbQueryStore store) throws ClassNotFoundException  {
         super(properties, store);
+        endpoint = properties.getOrDefault("endpoint", "localhost:1729");
+        dbName = properties.getOrDefault("databaseName", "ldbcsnb");
+        parallelisation = Integer.parseInt(properties.getOrDefault("parallelisation", "8")); 
 
-        String endpoint = properties.getOrDefault("endpoint", "localhost:1729");
-        String dbName = properties.getOrDefault("databaseName", "social_network");
-        
-        // Initializing client and session
-        client = TypeDB.coreClient(endpoint);
-        session = client.session(dbName, TypeDBSession.Type.DATA);
+        System.out.println("###2 Initializing TypeQLDbConnectionState");
     }
 
-    public TypeDBClient getClient() throws DbException{
+    /**
+     * Gets the TypeDB client.
+     *
+     * @return The TypeDB client.
+     */
+    public TypeDBClient getClient() throws DbException {
+        if (client == null) {
+            client = TypeDB.coreClient(endpoint, parallelisation);
+        }
         return client;
     }
-    
-    public TypeDBSession getSession() throws DbException{
-        return session;
+
+    public TypeDBTransaction getTransaction() throws DbException {
+        if (session == null || !session.isOpen()) {
+            session = getClient().session(dbName, TypeDBSession.Type.DATA);
+        }
+        TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.READ);
+        return transaction;
     }
 
     @Override
     public void close() {
-        if (session != null) {
+        if (session != null && session.isOpen()) {
             session.close();
         }
         if (client != null) {

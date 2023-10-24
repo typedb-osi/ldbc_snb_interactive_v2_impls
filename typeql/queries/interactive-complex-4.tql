@@ -1,29 +1,21 @@
-SELECT TOP(10) name, count(*) AS postCount
-        FROM
-            Tag,
-            Message,
-            Message_hasTag_Tag recent,
-            Person_knows_Person
-        WHERE Message.MessageId = recent.MessageId
-        AND recent.TagId = Tag.id
-        AND Message.CreatorPersonId = Person2Id
-        AND ParentMessageId IS NULL -- post, not comment
-        AND Person1Id = :personId
-        AND Message.creationDate >= :startDate
-           AND Message.creationDate < DATEADD(day, :durationDays, :startDate)
-  AND NOT EXISTS (
-        SELECT *
-        FROM (
-            SELECT DISTINCT TagId
-            FROM Message, Message_hasTag_Tag, Person_knows_Person
-            WHERE Person1Id = :personId
-            AND Person2Id = CreatorPersonId
-            AND ParentMessageId IS NULL -- post, not comment
-            AND Message_hasTag_Tag.MessageId = Message.MessageId
-            AND Message.creationDate < :startDate
-        ) tags
-        WHERE tags.TagId = recent.TagId
-      )
-GROUP BY name
-ORDER BY postCount DESC, name ASC
-;
+// Q4. New topics
+/*
+:params { personId: 4398046511333, startDate: 1275350400000, endDate: 1277856000000 }
+*/
+MATCH (person:Person {id: $personId })-[:KNOWS]-(friend:Person),
+      (friend)<-[:HAS_CREATOR]-(post:Post)-[:HAS_TAG]->(tag)
+WITH DISTINCT tag, post
+WITH tag,
+     CASE
+       WHEN $endDate > post.creationDate >= $startDate THEN 1
+       ELSE 0
+     END AS valid,
+     CASE
+       WHEN $startDate > post.creationDate THEN 1
+       ELSE 0
+     END AS inValid
+WITH tag, sum(valid) AS postCount, sum(inValid) AS inValidPostCount
+WHERE postCount>0 AND inValidPostCount=0
+RETURN tag.name AS tagName, postCount
+ORDER BY postCount DESC, tagName ASC
+LIMIT 10

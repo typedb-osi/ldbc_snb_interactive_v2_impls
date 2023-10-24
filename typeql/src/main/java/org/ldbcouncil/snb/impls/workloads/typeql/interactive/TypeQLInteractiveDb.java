@@ -13,25 +13,25 @@ public class TypeQLInteractiveDb extends TypeQLDb {
     protected void onInit(Map<String, String> properties, LoggingService loggingService) throws DbException {
         super.onInit(properties, loggingService);
 
-        // registerOperationHandler(LdbcQuery1.class, Query1.class);
-        // registerOperationHandler(LdbcQuery2.class, Query2.class);
-        // registerOperationHandler(LdbcQuery3a.class, Query3a.class);
-        // registerOperationHandler(LdbcQuery3b.class, Query3b.class);
-        // registerOperationHandler(LdbcQuery4.class, Query4.class);
-        // registerOperationHandler(LdbcQuery5.class, Query5.class);
-        // registerOperationHandler(LdbcQuery6.class, Query6.class);
-        // registerOperationHandler(LdbcQuery7.class, Query7.class);
-        // registerOperationHandler(LdbcQuery8.class, Query8.class);
-        // registerOperationHandler(LdbcQuery9.class, Query9.class);
-        // registerOperationHandler(LdbcQuery10.class, Query10.class);
-        // registerOperationHandler(LdbcQuery11.class, Query11.class);
-        // registerOperationHandler(LdbcQuery12.class, Query12.class);
-        // registerOperationHandler(LdbcQuery13a.class, Query13a.class);
-        // registerOperationHandler(LdbcQuery13b.class, Query13b.class);
-        // registerOperationHandler(LdbcQuery14a.class, Query14a.class);
-        // registerOperationHandler(LdbcQuery14b.class, Query14b.class);
+        // registerOperationHandler(LdbcQuery1.class, InteractiveQuery1.class);
+        registerOperationHandler(LdbcQuery2.class, InteractiveQuery2.class);
+        // registerOperationHandler(LdbcQuery3a.class, InteractiveQuery3a.class);
+        // registerOperationHandler(LdbcQuery3b.class, InteractiveQuery3b.class);
+        // registerOperationHandler(LdbcQuery4.class, InteractiveQuery4.class);
+        // registerOperationHandler(LdbcQuery5.class, InteractiveQuery5.class);
+        // registerOperationHandler(LdbcQuery6.class, InteractiveQuery6.class);
+        // registerOperationHandler(LdbcQuery7.class, InteractiveQuery7.class);
+        // registerOperationHandler(LdbcQuery8.class, InteractiveQuery8.class);
+        // registerOperationHandler(LdbcQuery9.class, InteractiveQuery9.class);
+        // registerOperationHandler(LdbcQuery10.class, InteractiveQuery10.class);
+        // registerOperationHandler(LdbcQuery11.class, InteractiveQuery11.class);
+        // registerOperationHandler(LdbcQuery12.class, InteractiveQuery12.class);
+        // registerOperationHandler(LdbcQuery13a.class, InteractiveQuery13a.class);
+        // registerOperationHandler(LdbcQuery13b.class, InteractiveQuery13b.class);
+        // registerOperationHandler(LdbcQuery14a.class, InteractiveQuery14a.class);
+        // registerOperationHandler(LdbcQuery14b.class, InteractiveQuery14b.class);
 
-        registerOperationHandler(LdbcShortQuery1PersonProfile.class, ShortQuery1PersonProfile.class);
+        // registerOperationHandler(LdbcShortQuery1PersonProfile.class, ShortQuery1PersonProfile.class);
         // registerOperationHandler(LdbcShortQuery2PersonPosts.class, ShortQuery2PersonPosts.class);
         // registerOperationHandler(LdbcShortQuery3PersonFriends.class, ShortQuery3PersonFriends.class);
         // registerOperationHandler(LdbcShortQuery4MessageContent.class, ShortQuery4MessageContent.class);

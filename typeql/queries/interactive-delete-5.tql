@@ -1,4 +1,4 @@
--- Remove forum membership
-DELETE FROM Forum_hasMember_Person
-WHERE ForumId = :forumId
-  AND PersonId = :personId
+// DEL 5: Remove forum membership
+MATCH (:Forum {id: $forumId})-[hasMember:HAS_MEMBER]->(:Person {id: $personId})
+DELETE hasMember
+RETURN count(*)

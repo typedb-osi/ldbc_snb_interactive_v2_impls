@@ -1,80 +1,144 @@
-define 
-
-#entities
-Place sub entity,
-    abstract,
+define
+birthday sub attribute,
+    value datetime;
+browserUsed sub attribute,
+    value string;
+classYear sub attribute,
+    value long;
+content sub attribute,
+    value string;
+creationDate sub attribute,
+    value datetime;
+email sub attribute,
+    value string;
+firstName sub attribute,
+    value string;
+gender sub attribute,
+    value string;
+id sub attribute,
+    value long;
+imageFile sub attribute,
+    value string;
+language sub attribute,
+    value string;
+lastName sub attribute,
+    value string;
+length sub attribute,
+    value long;
+locationIP sub attribute,
+    value string;
+name sub attribute,
+    value string;
+speaks sub attribute,
+    value string;
+title sub attribute,
+    value string;
+url sub attribute,
+    value string;
+workFrom sub attribute,
+    value long;
+containerOf sub relation,
+    relates contain,
+    relates container;
+hasCreator sub relation,
+    relates created,
+    relates creator;
+hasInterest sub relation,
+    owns creationDate,
+    relates interested,
+    relates interests;
+hasMember sub relation,
+    owns creationDate,
+    relates member,
+    relates memberOf;
+hasModerator sub relation,
+    relates moderated,
+    relates moderator;
+hasTag sub relation,
+    owns creationDate,
+    relates tag,
+    relates tagged;
+hasType sub relation,
+    relates tag,
+    relates tagClass;
+isLocatedIn sub relation,
+    relates locatedIn,
+    relates location;
+isPartOf sub relation,
+    relates part,
+    relates partOf;
+isSubclassOf sub relation,
+    relates subclass,
+    relates superclass;
+knows sub relation,
+    owns creationDate,
+    relates friend;
+likes sub relation,
+    owns creationDate,
+    relates liker,
+    relates message;
+replyOf sub relation,
+    relates repliedTo,
+    relates reply;
+studyAt sub relation,
+    owns classYear,
+    owns creationDate,
+    relates student,
+    relates university;
+workAt sub relation,
+    owns creationDate,
+    owns workFrom,
+    relates employee,
+    relates employer;
+Forum sub entity,
     owns id @key,
-    owns name,
-    owns url;
-
-City sub Place,
-    plays isLocatedIn:locatedIn,
-    plays isPartOf:part;
-
-Country sub Place,
-    plays isLocatedIn:locatedIn,
-    plays isPartOf:part,
-    plays isPartOf:partOf;
-
-Continent sub Place,
-    plays isPartOf:partOf;
-
+    owns creationDate,
+    owns title,
+    plays containerOf:container,
+    plays hasMember:memberOf,
+    plays hasModerator:moderated,
+    plays hasTag:tagged;
 Message sub entity,
     abstract,
     owns id @key,
     owns browserUsed,
-    owns creationDate,
-    owns locationIP,
     owns content,
+    owns creationDate,
     owns length,
+    owns locationIP,
     plays hasCreator:created,
     plays hasTag:tagged,
     plays isLocatedIn:location,
     plays likes:message,
     plays replyOf:repliedTo;
-
 Comment sub Message,
     plays replyOf:reply;
-
 Post sub Message,
     owns imageFile,
     owns language,
     plays containerOf:contain;
-
 Organisation sub entity,
     abstract,
     owns id @key,
     owns name,
     owns url;
-
-University sub Organisation,
-    plays isLocatedIn:location,
-    plays studyAt:university;
-
 Company sub Organisation,
     plays isLocatedIn:location,
     plays workAt:employer;
-
-Forum sub entity,
-    owns id @key,
-    owns title,
-    owns creationDate,
-    plays containerOf:container,
-    plays hasMember:memberOf,
-    plays hasModerator:moderated,
-    plays hasTag:tagged;
-
+University sub Organisation,
+    plays isLocatedIn:location,
+    plays studyAt:university;
 Person sub entity,
     owns id @key,
-    owns firstName,
-    owns lastName,
-    owns gender,
     owns birthday,
-    owns email,
-    owns speaks,
     owns browserUsed,
-    owns locationIP,
     owns creationDate,
+    owns email,
+    owns firstName,
+    owns gender,
+    owns lastName,
+    owns locationIP,
+    owns speaks,
     plays hasCreator:creator,
     plays hasInterest:interested,
     plays hasMember:member,
@@ -84,7 +148,20 @@ Person sub entity,
     plays likes:liker,
     plays studyAt:student,
     plays workAt:employee;
-
+Place sub entity,
+    abstract,
+    owns id @key,
+    owns name,
+    owns url;
+City sub Place,
+    plays isLocatedIn:locatedIn,
+    plays isPartOf:part;
+Continent sub Place,
+    plays isPartOf:partOf;
+Country sub Place,
+    plays isLocatedIn:locatedIn,
+    plays isPartOf:part,
+    plays isPartOf:partOf;
 Tag sub entity,
     owns id @key,
     owns name,
@@ -92,7 +169,6 @@ Tag sub entity,
     plays hasInterest:interests,
     plays hasTag:tag,
     plays hasType:tag;
-
 TagClass sub entity,
     owns id @key,
     owns name,
@@ -100,131 +176,3 @@ TagClass sub entity,
     plays hasType:tagClass,
     plays isSubclassOf:subclass,
     plays isSubclassOf:superclass;
-
-#attributes
-
-name sub attribute,
-    value string;
-    
-id sub attribute,
-    value long;
-
-firstName sub attribute,
-    value string;
-
-lastName sub attribute,
-    value string;
-
-gender sub attribute,
-    value string;
-
-birthday sub attribute,
-    value datetime;
-
-speaks sub attribute,
-    value string;
-
-email sub attribute,
-    value string;
-
-url sub attribute,
-    value string;
-
-browserUsed sub attribute,
-    value string;
-
-locationIP sub attribute,
-    value string;
-
-content sub attribute,
-    value string;
-
-length sub attribute,
-    value long;
-
-title sub attribute,
-    value string;
-
-creationDate sub attribute,
-    value datetime;
-
-language sub attribute,
-    value string;
-
-imageFile sub attribute,
-    value string;
-
-classYear sub attribute,
-    value long;
-
-workFrom sub attribute,
-    value long;
-
-#relations
-
-containerOf sub relation,
-    relates contain,
-    relates container;
-
-hasCreator sub relation,
-    relates creator,
-    relates created;
-
-hasInterest sub relation,
-    owns creationDate,
-    relates interested,
-    relates interests;
-
-hasMember sub relation,
-    owns creationDate,
-    relates member,
-    relates memberOf;
-
-hasModerator sub relation,
-    relates moderator,
-    relates moderated;
-
-hasTag sub relation,
-    owns creationDate,
-    relates tag,
-    relates tagged;
-
-hasType sub relation,
-    relates tag,
-    relates tagClass;
-
-isLocatedIn sub relation,
-    relates location,
-    relates locatedIn;
-
-isPartOf sub relation,
-    relates part,
-    relates partOf;
-
-isSubclassOf sub relation,
-    relates subclass,
-    relates superclass;
-
-knows sub relation,
-    owns creationDate,
-    relates friend;
-
-likes sub relation,
-    relates liker,
-    relates message;
-
-replyOf sub relation,
-    relates reply,
-    relates repliedTo;
-
-studyAt sub relation,
-    owns classYear,
-    owns creationDate,
-    relates student,
-    relates university;
-
-workAt sub relation,
-    owns creationDate,
-    owns workFrom,
-    relates employee,
-    relates employer;

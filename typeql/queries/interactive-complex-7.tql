@@ -1,33 +1,21 @@
-SELECT
-    Person.personId,
-    firstName,
-    lastName,
-    l.creationDate,
-    Message.MessageId,
-    coalesce(imageFile, content)
-     , DATEDIFF_BIG(second, Message.creationDate, l.creationDate)/60 AS minutesLatency
-     , (CASE WHEN EXISTS (SElECT 1
-                            FROM Person_knows_Person
-                           WHERE Person1Id = :personId
-                             AND Person2Id = Person.personId)
-                            THEN 0 ELSE 1 END
-       ) AS isNew
-FROM
-    (
-        SELECT TOP(20) PersonId, max(Person_likes_Message.creationDate) AS creationDate
-        FROM Person_likes_Message, Message
-        WHERE
-          Person_likes_Message.MessageId = Message.MessageId AND
-          CreatorPersonId = :personId
-        GROUP BY PersonId
-        ORDER BY creationDate DESC
-    ) tmp,
-    Message,
-    Person,
-    Person_likes_Message AS l
-WHERE Person.personId = tmp.PersonId
-  AND tmp.PersonId = l.PersonId
-  AND tmp.creationDate = l.creationDate
-  AND l.MessageId = Message.MessageId
-ORDER BY creationDate DESC, Person.personId ASC
-;
+// Q7. Recent likers
+/*
+:params { personId: 4398046511268 }
+*/
+MATCH (person:Person {id: $personId})<-[:HAS_CREATOR]-(message:Message)<-[like:LIKES]-(liker:Person)
+    WITH liker, message, like.creationDate AS likeTime, person
+    ORDER BY likeTime DESC, toInteger(message.id) ASC
+    WITH liker, head(collect({msg: message, likeTime: likeTime})) AS latestLike, person
+RETURN
+    liker.id AS personId,
+    liker.firstName AS personFirstName,
+    liker.lastName AS personLastName,
+    latestLike.likeTime AS likeCreationDate,
+    latestLike.msg.id AS commentOrPostId,
+    coalesce(latestLike.msg.content, latestLike.msg.imageFile) AS commentOrPostContent,
+    toInteger(floor(toFloat(latestLike.likeTime - latestLike.msg.creationDate)/1000.0)/60.0) AS minutesLatency,
+    not((liker)-[:KNOWS]-(person)) AS isNew
+ORDER BY
+    likeCreationDate DESC,
+    toInteger(personId) ASC
+LIMIT 20

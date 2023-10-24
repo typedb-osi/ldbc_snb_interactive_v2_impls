@@ -25,11 +25,16 @@ public abstract class TypeQLSingletonOperationHandler<TOperation extends Operati
     public void executeOperation(TOperation operation, TypeQLDbConnectionState<?> state,
                                  ResultReporter resultReporter) throws DbException
     {
+        System.out.println("Executing operation: " + operation.getClass().getSimpleName());
         String query = getQueryString(state, operation);
         final Map<String, Object> parameters = getParameters(state, operation);
 
-        try(TypeDBSession session = state.getSession()){
-            try(TypeDBTransaction transaction = session.transaction(TypeDBTransaction.Type.READ)){
+        try(TypeDBTransaction transaction = state.getTransaction()){
+                //replace parameters in query
+                for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+                    query = query.replace(entry.getKey(), entry.getValue().toString());
+                }
+
                 Iterator<ConceptMap> result = transaction.query().match(query).iterator();
 
                 if (result.hasNext()) {
@@ -37,7 +42,6 @@ public abstract class TypeQLSingletonOperationHandler<TOperation extends Operati
                 } else {
                     resultReporter.report(0, toResult(null), operation);
                 }
-            }
         }
         catch (ParseException e) {
             throw new DbException(e);

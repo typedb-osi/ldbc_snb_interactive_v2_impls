@@ -1,4 +1,4 @@
--- Remove comment like
-DELETE FROM Person_likes_Message
-WHERE PersonId = :personId
-  AND MessageId = :commentId
+// DEL 3: Remove comment like
+MATCH (:Person {id: $personId})-[likes:LIKES]->(:Comment {id: $commentId})
+DELETE likes
+RETURN count(*)

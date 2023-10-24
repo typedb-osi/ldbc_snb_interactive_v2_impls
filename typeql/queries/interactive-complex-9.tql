@@ -1,26 +1,21 @@
-SELECT TOP(20)
-    Person.personId,
-    firstName,
-    lastName,
-    MessageId,
-    coalesce(imageFile, content),
-    Message.creationDate
-FROM
-    (
-        SELECT Person2Id
-        FROM Person_knows_Person
-        WHERE Person1Id = :personId
-        UNION
-        SELECT k2.Person2Id
-        FROM Person_knows_Person k1, Person_knows_Person k2
-        WHERE k1.Person1Id = :personId
-          AND k1.Person2Id = k2.Person1Id
-          AND k2.Person2Id <> :personId
-    ) friend,
-    Person,
-    Message
-WHERE Person.personId = CreatorPersonId
-  AND Person.personId = friend.Person2Id
-  AND Message.creationDate < :maxDate
-ORDER BY Message.creationDate DESC, MessageId ASC
-;
+// Q9. Recent messages by friends or friends of friends
+/*
+:params { personId: 4398046511268, maxDate: 1289908800000 }
+*/
+MATCH (root:Person {id: $personId })-[:KNOWS*1..2]-(friend:Person)
+WHERE NOT friend = root
+WITH collect(distinct friend) as friends
+UNWIND friends as friend
+    MATCH (friend)<-[:HAS_CREATOR]-(message:Message)
+    WHERE message.creationDate < $maxDate
+RETURN
+    friend.id AS personId,
+    friend.firstName AS personFirstName,
+    friend.lastName AS personLastName,
+    message.id AS commentOrPostId,
+    coalesce(message.content,message.imageFile) AS commentOrPostContent,
+    message.creationDate AS commentOrPostCreationDate
+ORDER BY
+    commentOrPostCreationDate DESC,
+    message.id ASC
+LIMIT 20
