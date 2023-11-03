@@ -121,6 +121,155 @@ public abstract class TypeQLDb extends BaseDb<TypeQLQueryStore> {
         }
     }
 
+    // public static class InteractiveQuery4 extends TypeQLListOperationHandler<LdbcQuery4,LdbcQuery4Result>
+    // {
+
+    //     @Override
+    //     public String getQueryString(TypeQLDbConnectionState state, LdbcQuery4 operation) {
+    //         return state.getQueryStore().getParameterizedQuery(QueryType.InteractiveComplexQuery4);
+    //     }
+
+    //     @Override
+    //     public Map<String, Object> getParameters(TypeQLDbConnectionState state, LdbcQuery4 operation) {
+    //         return state.getQueryStore().getQuery4Map(operation);
+    //     }
+
+    //     @Override
+    //     public LdbcQuery4Result toResult(ConceptMap result) throws ParseException {
+    //         if (result != null) {
+                
+
+    //             return new LdbcQuery4Result(
+    //                 friendId,
+    //                 name,
+    //                 surname,
+    //                 messageId,
+    //                 messageContent,
+    //                 messageCreationDate
+    //             );
+    //         } else {
+    //             return null;
+    //         }
+    //     }
+    // }
+
+    public static class InteractiveQuery7 extends TypeQLListOperationHandler<LdbcQuery7,LdbcQuery7Result>
+    {
+
+        @Override
+        public String getQueryString(TypeQLDbConnectionState state, LdbcQuery7 operation) {
+            return state.getQueryStore().getParameterizedQuery(QueryType.InteractiveComplexQuery7);
+        }
+
+        @Override
+        public Map<String, Object> getParameters(TypeQLDbConnectionState state, LdbcQuery7 operation) {
+            return state.getQueryStore().getQuery7Map(operation);
+        }
+
+        @Override
+        public LdbcQuery7Result toResult(ConceptMap result) throws ParseException {
+            if (result != null) {
+                
+                long likerId = result.get("likerId").asAttribute().asLong().getValue();
+                String likerFirstName = result.get("likerFirstName").asAttribute().asString().getValue();
+                String likerLastName = result.get("likerLastName").asAttribute().asString().getValue();
+                long likesDate = result.get("likesDate").asAttribute().asDateTime().getValue().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                long messageId = result.get("messageId").asAttribute().asLong().getValue();
+                String messageContent = result.get("messageContent").asValue().asString().getValue();
+                int minutesLatency = (int)((likesDate - result.get("date").asAttribute().asDateTime().getValue().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())/60000);
+                boolean isNew = result.get("isNew").asValue().asBoolean().getValue();
+                return new LdbcQuery7Result(
+                    likerId,
+                    likerFirstName,
+                    likerLastName,
+                    likesDate,
+                    messageId,
+                    messageContent,
+                    minutesLatency,
+                    isNew
+                );
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public static class InteractiveQuery8 extends TypeQLListOperationHandler<LdbcQuery8,LdbcQuery8Result>
+    {
+
+        @Override
+        public String getQueryString(TypeQLDbConnectionState state, LdbcQuery8 operation) {
+            return state.getQueryStore().getParameterizedQuery(QueryType.InteractiveComplexQuery8);
+        }
+
+        @Override
+        public Map<String, Object> getParameters(TypeQLDbConnectionState state, LdbcQuery8 operation) {
+            return state.getQueryStore().getQuery8Map(operation);
+        }
+
+        @Override
+        public LdbcQuery8Result toResult(ConceptMap result) throws ParseException {
+            if (result != null) {
+                
+                long authorId = result.get("authorId").asAttribute().asLong().getValue();
+                String firstname = result.get("firstname").asAttribute().asString().getValue();
+                String lastname = result.get("lastname").asAttribute().asString().getValue();
+                long date = result.get("date").asAttribute().asDateTime().getValue().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+                long replyId = result.get("replyId").asAttribute().asLong().getValue();
+                String content = result.get("content").asAttribute().asString().getValue();
+
+                return new LdbcQuery8Result(
+                    authorId,
+                    firstname,
+                    lastname,
+                    date,
+                    replyId,
+                    content
+                );
+            } else {
+                return null;
+            }
+        }
+    }
+
+    public static class InteractiveQuery9 extends TypeQLListOperationHandler<LdbcQuery9,LdbcQuery9Result>
+    {
+
+        @Override
+        public String getQueryString(TypeQLDbConnectionState state, LdbcQuery9 operation) {
+            return state.getQueryStore().getParameterizedQuery(QueryType.InteractiveComplexQuery9);
+        }
+
+        @Override
+        public Map<String, Object> getParameters(TypeQLDbConnectionState state, LdbcQuery9 operation) {
+            return state.getQueryStore().getQuery9Map(operation);
+        }
+
+        @Override
+        public LdbcQuery9Result toResult(ConceptMap result) throws ParseException {
+            if (result != null) {
+                
+                long otherId = result.get("other-id").asAttribute().asLong().getValue();
+                String firstname = result.get("firstname").asAttribute().asString().getValue();
+                String lastname = result.get("lastname").asAttribute().asString().getValue();
+                long messageId = result.get("message-id").asAttribute().asLong().getValue();
+                String messageContent = result.get("messageContent").asValue().asString().getValue();
+                long date = result.get("date").asAttribute().asDateTime().getValue().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
+
+                return new LdbcQuery9Result(
+                    otherId,
+                    firstname,
+                    lastname,
+                    messageId,
+                    messageContent,
+                    date
+                );
+            } else {
+                return null;
+            }
+        }
+    }
+
     // Interactive short reads
     // public static class ShortQuery1PersonProfile extends TypeQLSingletonOperationHandler<LdbcShortQuery1PersonProfile,LdbcShortQuery1PersonProfileResult>
     // {

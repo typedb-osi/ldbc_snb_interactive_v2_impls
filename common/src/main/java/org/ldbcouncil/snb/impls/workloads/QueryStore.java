@@ -154,16 +154,7 @@ public abstract class QueryStore {
     //  * @param operation LdbcQuery3 operation containing parameter values
     //  * @return Prepared Query3 string
     //  */
-    // public String getQuery3(LdbcQuery3a operation) {
-    //     return prepare(QueryType.InteractiveComplexQuery3, getQuery3Map(operation));
-    // }
-
-    // /**
-    //  * Get prepared Query3 string
-    //  * @param operation LdbcQuery3 operation containing parameter values
-    //  * @return Prepared Query3 string
-    //  */
-    // public String getQuery3(LdbcQuery3b operation) {
+    // public String getQuery3(LdbcQuery3 operation) {
     //     return prepare(QueryType.InteractiveComplexQuery3, getQuery3Map(operation));
     // }
 
@@ -172,23 +163,23 @@ public abstract class QueryStore {
     //  * @param operation LdbcQuery3 operation containing parameter values
     //  * @return Map with parameters and values as string.
     //  */
-    // public Map<String, Object> getQuery3Map(LdbcQuery3a operation) {
+    // public Map<String, Object> getQuery3Map(LdbcQuery3 operation) {
     //     return new ImmutableMap.Builder<String, Object>()
-    //     .put(LdbcQuery3a.PERSON_ID, getConverter().convertId(operation.getPersonIdQ3()))
-    //     .put(LdbcQuery3a.COUNTRY_X_NAME, getConverter().convertString(operation.getCountryXName()))
-    //     .put(LdbcQuery3a.COUNTRY_Y_NAME, getConverter().convertString(operation.getCountryYName()))
-    //     .put(LdbcQuery3a.START_DATE, getConverter().convertDate(operation.getStartDate()))
-    //     .put(LdbcQuery3a.DURATION_DAYS, getConverter().convertInteger(operation.getDurationDays()))
+    //     .put(LdbcQuery3.PERSON_ID, getConverter().convertId(operation.getPersonIdQ3()))
+    //     .put(LdbcQuery3.COUNTRY_X_NAME, getConverter().convertString(operation.getCountryXName()))
+    //     .put(LdbcQuery3.COUNTRY_Y_NAME, getConverter().convertString(operation.getCountryYName()))
+    //     .put(LdbcQuery3.START_DATE, getConverter().convertDate(operation.getStartDate()))
+    //     .put(LdbcQuery3.DURATION_DAYS, getConverter().convertInteger(operation.getDurationDays()))
     //     .build();
     // }
 
-    // public Map<String, Object> getQuery3Map(LdbcQuery3b operation) {
+    // public Map<String, Object> getQuery3Map(LdbcQuery3 operation) {
     //     return new ImmutableMap.Builder<String, Object>()
-    //     .put(LdbcQuery3b.PERSON_ID, getConverter().convertId(operation.getPersonIdQ3()))
-    //     .put(LdbcQuery3b.COUNTRY_X_NAME, getConverter().convertString(operation.getCountryXName()))
-    //     .put(LdbcQuery3b.COUNTRY_Y_NAME, getConverter().convertString(operation.getCountryYName()))
-    //     .put(LdbcQuery3b.START_DATE, getConverter().convertDate(operation.getStartDate()))
-    //     .put(LdbcQuery3b.DURATION_DAYS, getConverter().convertInteger(operation.getDurationDays()))
+    //     .put(LdbcQuery3.PERSON_ID, getConverter().convertId(operation.getPersonIdQ3()))
+    //     .put(LdbcQuery3.COUNTRY_X_NAME, getConverter().convertString(operation.getCountryXName()))
+    //     .put(LdbcQuery3.COUNTRY_Y_NAME, getConverter().convertString(operation.getCountryYName()))
+    //     .put(LdbcQuery3.START_DATE, getConverter().convertDate(operation.getStartDate()))
+    //     .put(LdbcQuery3.DURATION_DAYS, getConverter().convertInteger(operation.getDurationDays()))
     //     .build();
     // }
 
@@ -256,66 +247,66 @@ public abstract class QueryStore {
     //     .build();
     // }
 
-    // /**
-    //  * Get prepared Query7 string
-    //  * @param operation LdbcQuery7 operation containing parameter values
-    //  * @return Prepared Query7 string
-    //  */
-    // public String getQuery7(LdbcQuery7 operation) {
-    //     return prepare(QueryType.InteractiveComplexQuery7, getQuery7Map(operation));
-    // }
+    /**
+     * Get prepared Query7 string
+     * @param operation LdbcQuery7 operation containing parameter values
+     * @return Prepared Query7 string
+     */
+    public String getQuery7(LdbcQuery7 operation) {
+        return prepare(QueryType.InteractiveComplexQuery7, getQuery7Map(operation));
+    }
 
-    // /**
-    //  * Get Query7 Map. This map contain the name of the parameter and the value as string.
-    //  * @param operation LdbcQuery7 operation containing parameter values
-    //  * @return Map with parameters and values as string.
-    //  */
-    // public Map<String, Object> getQuery7Map(LdbcQuery7 operation) {
-    //     return new ImmutableMap.Builder<String, Object>()
-    //     .put(LdbcQuery7.PERSON_ID, getConverter().convertId(operation.getPersonIdQ7()))
-    //     .build();
-    // }
+    /**
+     * Get Query7 Map. This map contain the name of the parameter and the value as string.
+     * @param operation LdbcQuery7 operation containing parameter values
+     * @return Map with parameters and values as string.
+     */
+    public Map<String, Object> getQuery7Map(LdbcQuery7 operation) {
+        return new ImmutableMap.Builder<String, Object>()
+        .put(LdbcQuery7.PERSON_ID, getConverter().convertId(operation.getPersonIdQ7()))
+        .build();
+    }
 
-    // /**
-    //  * Get prepared Query8 string
-    //  * @param operation LdbcQuery8 operation containing parameter values
-    //  * @return Prepared Query8 string
-    //  */
-    // public String getQuery8(LdbcQuery8 operation) {
-    //     return prepare(QueryType.InteractiveComplexQuery8, getQuery8Map(operation));
-    // }
+    /**
+     * Get prepared Query8 string
+     * @param operation LdbcQuery8 operation containing parameter values
+     * @return Prepared Query8 string
+     */
+    public String getQuery8(LdbcQuery8 operation) {
+        return prepare(QueryType.InteractiveComplexQuery8, getQuery8Map(operation));
+    }
 
-    // /**
-    //  * Get Query8 Map. This map contain the name of the parameter and the value as string.
-    //  * @param operation LdbcQuery8 operation containing parameter values
-    //  * @return Map with parameters and values as string.
-    //  */
-    // public Map<String, Object> getQuery8Map(LdbcQuery8 operation) {
-    //     return new ImmutableMap.Builder<String, Object>()
-    //     .put(LdbcQuery8.PERSON_ID, getConverter().convertId(operation.getPersonIdQ8()))
-    //     .build();
-    // }
+    /**
+     * Get Query8 Map. This map contain the name of the parameter and the value as string.
+     * @param operation LdbcQuery8 operation containing parameter values
+     * @return Map with parameters and values as string.
+     */
+    public Map<String, Object> getQuery8Map(LdbcQuery8 operation) {
+        return new ImmutableMap.Builder<String, Object>()
+        .put(LdbcQuery8.PERSON_ID, getConverter().convertId(operation.getPersonIdQ8()))
+        .build();
+    }
 
-    // /**
-    //  * Get prepared Query9 string
-    //  * @param operation LdbcQuery9 operation containing parameter values
-    //  * @return Prepared Query9 string
-    //  */
-    // public String getQuery9(LdbcQuery9 operation) {
-    //     return prepare(QueryType.InteractiveComplexQuery9, getQuery9Map(operation));
-    // }
+    /**
+     * Get prepared Query9 string
+     * @param operation LdbcQuery9 operation containing parameter values
+     * @return Prepared Query9 string
+     */
+    public String getQuery9(LdbcQuery9 operation) {
+        return prepare(QueryType.InteractiveComplexQuery9, getQuery9Map(operation));
+    }
 
-    // /**
-    //  * Get Query9 Map. This map contain the name of the parameter and the value as string.
-    //  * @param operation LdbcQuery9 operation containing parameter values
-    //  * @return Map with parameters and values as string.
-    //  */
-    // public Map<String, Object> getQuery9Map(LdbcQuery9 operation) {
-    //     return new ImmutableMap.Builder<String, Object>()
-    //     .put(LdbcQuery9.PERSON_ID, getConverter().convertId(operation.getPersonIdQ9()))
-    //     .put(LdbcQuery9.MAX_DATE, getConverter().convertDate(operation.getMaxDate()))
-    //     .build();
-    // }
+    /**
+     * Get Query9 Map. This map contain the name of the parameter and the value as string.
+     * @param operation LdbcQuery9 operation containing parameter values
+     * @return Map with parameters and values as string.
+     */
+    public Map<String, Object> getQuery9Map(LdbcQuery9 operation) {
+        return new ImmutableMap.Builder<String, Object>()
+        .put(LdbcQuery9.PERSON_ID, getConverter().convertId(operation.getPersonIdQ9()))
+        .put(LdbcQuery9.MAX_DATE, getConverter().convertDate(operation.getMaxDate()))
+        .build();
+    }
 
     // /**
     //  * Get prepared Query10 string
