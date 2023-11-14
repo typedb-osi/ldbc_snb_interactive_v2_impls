@@ -2,20 +2,21 @@
 #\set personId 17592186044461
 
 match
-    $p isa person, 
-    has id :personId,
-    has firstName $f-n,
-    has lastName $l-n,
-    has birthday $b-d,
-    has locationIP $ip,
-    has browserUsed $b-u,
-    has gender $g,
-    has creationDate $c-d,
-    $y (location: $p, locatedIn: $c) isa isLocatedIn;
-    $c isa City, has id $c-id;
+  $person isa Person,
+    # has id :personId,
+    has id 478,
+    has firstName $firstName,
+    has lastName $lastName,
+    has birthday $birthday,
+    has locationIP $locationIP,
+    has browserUsed $browserUsed,
+    has gender $gender,
+    has creationDate $creationDate;
+    $relation (location: $person, locatedIn: $city) isa isLocatedIn;
+    $city isa City, has id $cityId;
 
 get
-    $fn, $ln, $bd, $ip, $bu, $oc-id, $g, $cd;
+  $firstName, $lastName, $birthday, $locationIP, $browserUsed, $cityId, $gender, $creationDate;
 
 
 

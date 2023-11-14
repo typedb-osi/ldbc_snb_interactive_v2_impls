@@ -35,14 +35,52 @@ match
     $other-person has gender $friendGender;
     $other-person has browserUsed $friendBrowserUsed;
     $other-person has locationIP $friendLocationIP;
-    $city-relation(location: $other-person, locatedIn: $friend-city) isa isLocatedIn;
-    $friend-city  has name $friendCityName;
-    $other-person has email $emails;
-    $other-person has speaks $languages;
-    $uni-relation(student: $other-person, university: $universities) isa studyAt;
-    $universities has name $universityName;
+    $city-relation(location: $other-person, locatedIn: $friendCityName) isa isLocatedIn;
 
-get
-    $friendId,?distance,$friendLastName,$friendBirthday,$friendCreationDate,$friendGender,$friendBrowserUsed,$friendLocationIP,$friendCityName,$universityName;
-    sort ?distance, $friendLastName, $friendId;
-    limit 20;
+fetch
+    $friendId;
+    $friendLastName; 
+    $friendBirthday;
+    $friendCreationDate;
+    $friendGender;
+    $friendBrowserUsed;
+    $friendLocationIP;
+    $friendCityName;
+    ?distance;
+    friendEmail: {
+        match
+            $other-person has email $mail;
+        fetch
+            $mail;
+    };
+    friendLanguages: {
+        match
+            $other-person has speaks $lang;
+        fetch
+            $lang;
+    };
+    friendUniversity: {
+        match
+            $uni-relation(student: $other-person, university: $universities) isa studyAt,
+                has startYear $startYear;
+            $universities has name $universityName;
+            $unicity-relation(location: $universities, locatedIn: $uni-location) isa isLocatedIn;
+        fetch
+            $universityName;
+            $startYear; 
+            $uni-location;
+    };
+    friendCompany: {
+        match
+            $company-relation(employee: $other-person, employer: $companies) isa workAt,
+                has workFrom $workFrom;
+            $companies has name $companyName;
+            $companycity-relation(location: $companies, locatedIn: $company-location) isa isLocatedIn;
+        fetch
+            $companyName;
+            $workFrom;
+            $company-location;
+    };
+
+sort ?distance, $friendLastName, $friendId;
+limit 20;
