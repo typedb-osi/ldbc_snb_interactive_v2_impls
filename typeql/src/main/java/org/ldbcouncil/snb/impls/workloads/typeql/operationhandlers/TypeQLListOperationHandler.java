@@ -1,29 +1,24 @@
 package org.ldbcouncil.snb.impls.workloads.typeql.operationhandlers;
 
-import org.apache.commons.math3.analysis.function.Log;
 import org.ldbcouncil.snb.driver.DbException;
 import org.ldbcouncil.snb.driver.Operation;
 import org.ldbcouncil.snb.driver.ResultReporter;
 import org.ldbcouncil.snb.impls.workloads.typeql.TypeQLDbConnectionState;
 import org.ldbcouncil.snb.impls.workloads.operationhandlers.ListOperationHandler;
-import org.ldbcouncil.snb.impls.workloads.operationhandlers.SingletonOperationHandler;
 
-import com.vaticle.typedb.client.api.TypeDBSession;
-import com.vaticle.typedb.client.api.answer.ConceptMap;
-import com.vaticle.typedb.client.api.TypeDBTransaction;
+import com.vaticle.typedb.driver.api.TypeDBTransaction;
+import com.vaticle.typedb.driver.api.answer.JSON;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 public abstract class TypeQLListOperationHandler<TOperation extends Operation<List<TOperationResult>>, TOperationResult>
         implements ListOperationHandler<TOperationResult,TOperation,TypeQLDbConnectionState>
 {
-    public abstract TOperationResult toResult(ConceptMap concept) throws ParseException;
+    public abstract TOperationResult toResult(JSON concept) throws ParseException;
 
     public abstract Map<String, Object> getParameters(TypeQLDbConnectionState<?> state, TOperation operation );
 
@@ -34,28 +29,33 @@ public abstract class TypeQLListOperationHandler<TOperation extends Operation<Li
         System.out.println("Executing operation: " + operation.getClass().getSimpleName());
         String query = getQueryString(state, operation);
         final Map<String, Object> parameters = getParameters(state, operation);
+        // Replace parameters in query
+        for (Map.Entry<String, Object> entry : parameters.entrySet()) {
+            String valueString = entry.getValue().toString().replace("\"", "").replace("\'","");
+            query = query.replace(":" + entry.getKey(), valueString);
+        }
+        System.out.println("Query: " + query);
+        final List<TOperationResult> results = new ArrayList<>();
 
         try(TypeDBTransaction transaction = state.getTransaction()){
-
-            final List<TOperationResult> results = new ArrayList<>();
-            //replace parameters in query
-            for (Map.Entry<String, Object> entry : parameters.entrySet()) {
-                String valueString = entry.getValue().toString().replace("\"", "").replace("\'","");
-                query = query.replace(":" + entry.getKey(), valueString);
-            }
-
-            final Stream<ConceptMap> result = transaction.query().match(query);
+            System.out.println("Transaction: " + transaction);
             
+            final Stream<JSON> result = transaction.query().fetch(query);
+            
+            // Convert and collect results
             result.forEach(concept -> {
                 try {
                     results.add(toResult(concept));
                 } catch (ParseException e) {
-                    e.printStackTrace();
+                    // Swallow the error
+                    System.err.println("Error parsing concept: " + e.getMessage());
                 }
             });
             transaction.close();
             resultReporter.report(results.size(), results, operation);
-            
+        } catch (Exception e) {
+            System.err.println("Error executing operation: " + operation.getClass().getSimpleName());
+            e.printStackTrace();
         }
     }
 }

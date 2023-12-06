@@ -11,9 +11,9 @@ public enum QueryType {
         // InteractiveComplexQuery4 ("interactive-complex-4" ),
         // InteractiveComplexQuery5 ("interactive-complex-5" ),
         // InteractiveComplexQuery6 ("interactive-complex-6" ),
-        InteractiveComplexQuery7 ("interactive-complex-7" ),
-        InteractiveComplexQuery8 ("interactive-complex-8" ),
-        InteractiveComplexQuery9 ("interactive-complex-9" ),
+        // InteractiveComplexQuery7 ("interactive-complex-7" ),
+        // InteractiveComplexQuery8 ("interactive-complex-8" ),
+        // InteractiveComplexQuery9 ("interactive-complex-9" ),
         // InteractiveComplexQuery10("interactive-complex-10"),
         // InteractiveComplexQuery11("interactive-complex-11"),
         // InteractiveComplexQuery12("interactive-complex-12"),
@@ -24,7 +24,7 @@ public enum QueryType {
         // InteractiveComplexQuery7WithSecond("interactive-complex-7-with-second"),
 
         // interactive short queries
-        // InteractiveShortQuery1("interactive-short-1"),
+        InteractiveShortQuery1("interactive-short-1"),
         // InteractiveShortQuery2("interactive-short-2"),
         // InteractiveShortQuery3("interactive-short-3"),
         // InteractiveShortQuery4("interactive-short-4"),

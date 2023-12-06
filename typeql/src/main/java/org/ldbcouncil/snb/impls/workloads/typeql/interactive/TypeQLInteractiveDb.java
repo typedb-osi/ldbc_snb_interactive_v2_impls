@@ -20,9 +20,9 @@ public class TypeQLInteractiveDb extends TypeQLDb {
         // registerOperationHandler(LdbcQuery4.class, InteractiveQuery4.class);
         // registerOperationHandler(LdbcQuery5.class, InteractiveQuery5.class);
         // registerOperationHandler(LdbcQuery6.class, InteractiveQuery6.class);
-        registerOperationHandler(LdbcQuery7.class, InteractiveQuery7.class);
-        registerOperationHandler(LdbcQuery8.class, InteractiveQuery8.class);
-        registerOperationHandler(LdbcQuery9.class, InteractiveQuery9.class);
+        // registerOperationHandler(LdbcQuery7.class, InteractiveQuery7.class);
+        // registerOperationHandler(LdbcQuery8.class, InteractiveQuery8.class);
+        // registerOperationHandler(LdbcQuery9.class, InteractiveQuery9.class);
         // registerOperationHandler(LdbcQuery10.class, InteractiveQuery10.class);
         // registerOperationHandler(LdbcQuery11.class, InteractiveQuery11.class);
         // registerOperationHandler(LdbcQuery12.class, InteractiveQuery12.class);
@@ -31,7 +31,7 @@ public class TypeQLInteractiveDb extends TypeQLDb {
         // registerOperationHandler(LdbcQuery14a.class, InteractiveQuery14a.class);
         // registerOperationHandler(LdbcQuery14b.class, InteractiveQuery14b.class);
 
-        // registerOperationHandler(LdbcShortQuery1PersonProfile.class, ShortQuery1PersonProfile.class);
+        registerOperationHandler(LdbcShortQuery1PersonProfile.class, ShortQuery1PersonProfile.class);
         // registerOperationHandler(LdbcShortQuery2PersonPosts.class, ShortQuery2PersonPosts.class);
         // registerOperationHandler(LdbcShortQuery3PersonFriends.class, ShortQuery3PersonFriends.class);
         // registerOperationHandler(LdbcShortQuery4MessageContent.class, ShortQuery4MessageContent.class);

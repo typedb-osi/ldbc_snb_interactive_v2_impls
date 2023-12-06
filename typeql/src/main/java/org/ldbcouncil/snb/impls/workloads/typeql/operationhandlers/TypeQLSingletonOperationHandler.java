@@ -6,9 +6,8 @@ import org.ldbcouncil.snb.driver.ResultReporter;
 import org.ldbcouncil.snb.impls.workloads.typeql.TypeQLDbConnectionState;
 import org.ldbcouncil.snb.impls.workloads.operationhandlers.SingletonOperationHandler;
 
-import com.vaticle.typedb.client.api.TypeDBSession;
-import com.vaticle.typedb.client.api.answer.ConceptMap;
-import com.vaticle.typedb.client.api.TypeDBTransaction;
+import com.vaticle.typedb.driver.api.answer.JSON;
+import com.vaticle.typedb.driver.api.TypeDBTransaction;
 
 import java.text.ParseException;
 import java.util.Iterator;
@@ -17,7 +16,7 @@ import java.util.Map;
 public abstract class TypeQLSingletonOperationHandler<TOperation extends Operation<TOperationResult>, TOperationResult>
         implements SingletonOperationHandler<TOperationResult,TOperation,TypeQLDbConnectionState<?>>
 {
-    public abstract TOperationResult toResult(ConceptMap concept) throws ParseException;
+    public abstract TOperationResult toResult(JSON concept) throws ParseException;
 
     public abstract Map<String, Object> getParameters(TypeQLDbConnectionState<?> state, TOperation operation );
 
@@ -35,7 +34,7 @@ public abstract class TypeQLSingletonOperationHandler<TOperation extends Operati
                     query = query.replace(entry.getKey(), entry.getValue().toString());
                 }
 
-                Iterator<ConceptMap> result = transaction.query().match(query).iterator();
+                Iterator<JSON> result = transaction.query().fetch(query).iterator();
 
                 if (result.hasNext()) {
                     resultReporter.report(1, toResult(result.next()), operation);

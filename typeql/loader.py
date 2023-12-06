@@ -1,4 +1,4 @@
-from typedb.client import *
+from typedb.driver import *
 from tqdm import tqdm
 import csv
 import os
@@ -12,7 +12,7 @@ import threading
 ROOT = os.getcwd()
 SF = 0.1
 
-def load_place(client):
+def load_place(driver):
 
     def insert_data(session, row):
         # Insert entities and attributes
@@ -32,7 +32,7 @@ def load_place(client):
 
     directory = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "static", "Place")
 
-    with client.session("ldbcsnb", SessionType.DATA) as session:
+    with driver.session("ldbcsnb", SessionType.DATA) as session:
         # First Pass: Insert entities and attributes
         for filename in os.listdir(directory):
             if filename.endswith('.csv'):
@@ -43,7 +43,7 @@ def load_place(client):
 
                     with session.transaction(TransactionType.WRITE) as tx:
                         for row in csv_reader:
-                            tx.query().insert(insert_data(session, row))
+                            tx.query.insert(insert_data(session, row))
                         tx.commit()
                 
         # Second Pass: Insert relations
@@ -57,14 +57,14 @@ def load_place(client):
                     with session.transaction(TransactionType.WRITE) as tx:
                         for row in csv_reader:
                             if row[4]:
-                                tx.query().insert(insert_relations(session, row))
+                                tx.query.insert(insert_relations(session, row))
                         tx.commit()
 
                 
-def load_organization(client):
+def load_organization(driver):
     directory = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "static", "Organisation")
 
-    with client.session("ldbcsnb", SessionType.DATA) as session:
+    with driver.session("ldbcsnb", SessionType.DATA) as session:
         for filename in os.listdir(directory):
             if filename.endswith('.csv'):
                 filepath = os.path.join(directory, filename)
@@ -87,10 +87,10 @@ def load_organization(client):
                                     has url "{row[3]}";
                                 (location: $org, locatedIn: $place) isa isLocatedIn;
                             '''
-                            tx.query().insert(query)
+                            tx.query.insert(query)
                         tx.commit()
 
-def load_tagclass(client):
+def load_tagclass(driver):
     def insert_entities_and_attributes(session, row, tx):
         # Construct the insert query for entities and attributes
         tagclass_query = f'''
@@ -100,7 +100,7 @@ def load_tagclass(client):
             has url "{row[2]}";
         '''
         
-        tx.query().insert(tagclass_query)
+        tx.query.insert(tagclass_query)
 
     def insert_relations(session, row, tx):
         # Check if there's a superclass (SubclassOfTagClassId is not empty)
@@ -114,12 +114,12 @@ def load_tagclass(client):
                 (subclass: $tagclass, superclass: $superclass) isa isSubclassOf;
             '''
             
-            tx.query().insert(subclass_relation_query)
+            tx.query.insert(subclass_relation_query)
 
     # Load the tagclasses, their attributes, and their relations
     directory = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "static", "TagClass")
     
-    with client.session("ldbcsnb", SessionType.DATA) as session:
+    with driver.session("ldbcsnb", SessionType.DATA) as session:
         with session.transaction(TransactionType.WRITE) as tx:
             for filename in os.listdir(directory):
                 if  filename.endswith('.csv'):
@@ -141,11 +141,11 @@ def load_tagclass(client):
                             insert_relations(session, row, tx)
                     tx.commit()
             
-def load_tags(client, batch_size=1000):
+def load_tags(driver, batch_size=1000):
 
     directory = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "static", "Tag")
 
-    with client.session("ldbcsnb", SessionType.DATA) as session:
+    with driver.session("ldbcsnb", SessionType.DATA) as session:
         for filename in os.listdir(directory):
             if filename.endswith('.csv'):
                 filepath = os.path.join(directory, filename)
@@ -168,7 +168,7 @@ def load_tags(client, batch_size=1000):
                                 has url "{row[2]}";
                             (tag: $tag, tagClass: $tagclass) isa hasType;
                         '''
-                        tx.query().insert(query)
+                        tx.query.insert(query)
                         
                         processed_rows += 1
                         
@@ -189,10 +189,10 @@ def count_rows_in_directory(directory):
     return total_rows
   
               
-def load_person(client, batch_size=5000):
+def load_person(driver, batch_size=5000):
     directory = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic", "Person")
 
-    with client.session("ldbcsnb", SessionType.DATA) as session:
+    with driver.session("ldbcsnb", SessionType.DATA) as session:
         for filename in os.listdir(directory):
             if filename.endswith('.csv'):
                 filepath = os.path.join(directory, filename)
@@ -233,7 +233,7 @@ def load_person(client, batch_size=5000):
                         if len(queries) == batch_size:
                             with session.transaction(TransactionType.WRITE) as tx:
                                 for q in queries:
-                                    tx.query().insert(q)
+                                    tx.query.insert(q)
                                 tx.commit()
                             queries.clear()
 
@@ -241,10 +241,10 @@ def load_person(client, batch_size=5000):
                     if queries:
                         with session.transaction(TransactionType.WRITE) as tx:
                             for q in queries:
-                                tx.query().insert(q)
+                                tx.query.insert(q)
                             tx.commit()
 
-def process_file(filename, client, directory, batch_size, pbar, pbar_lock):
+def process_file(filename, driver, directory, batch_size, pbar, pbar_lock):
     filepath = os.path.join(directory, filename)
     with open(filepath, encoding='utf-8') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter='|')
@@ -252,7 +252,7 @@ def process_file(filename, client, directory, batch_size, pbar, pbar_lock):
 
         processed_rows = 0
 
-        with client.session("ldbcsnb", SessionType.DATA) as session:
+        with driver.session("ldbcsnb", SessionType.DATA) as session:
             tx = session.transaction(TransactionType.WRITE)  # Start the first transaction
 
             for row in csv_reader:
@@ -271,7 +271,7 @@ def process_file(filename, client, directory, batch_size, pbar, pbar_lock):
                         has creationDate {formatted_date};
                     (moderator: $moderator, moderated: $forum) isa hasModerator;
                 '''
-                tx.query().insert(query)
+                tx.query.insert(query)
 
                 processed_rows += 1
 
@@ -292,7 +292,7 @@ def process_file(filename, client, directory, batch_size, pbar, pbar_lock):
 
     return processed_rows
 
-def load_forum(client, batch_size=10000):
+def load_forum(driver, batch_size=10000):
     directory = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic", "Forum")
     
     # Estimate total rows (this is a rough estimate, assuming average file sizes)
@@ -305,14 +305,14 @@ def load_forum(client, batch_size=10000):
     with ThreadPoolExecutor() as executor:
         # Use partial to pass additional arguments (pbar and pbar_lock) to process_file
         from functools import partial
-        fn = partial(process_file, client=client, directory=directory, batch_size=batch_size, pbar=pbar, pbar_lock=pbar_lock)
+        fn = partial(process_file, driver=driver, directory=directory, batch_size=batch_size, pbar=pbar, pbar_lock=pbar_lock)
         list(executor.map(fn, filenames))
 
     pbar.close()
 
 
-def load_posts(client, batch_size=10000):
-    with client.session("ldbcsnb", SessionType.DATA) as session:
+def load_posts(driver, batch_size=10000):
+    with driver.session("ldbcsnb", SessionType.DATA) as session:
         directory = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic", "Post")
         
         # Estimate total rows (this is a rough estimate, assuming average file sizes)
@@ -354,7 +354,7 @@ def load_posts(client, batch_size=10000):
                             (contain: $post, container: $forum) isa containerOf;
                             (location: $post, locatedIn: $country) isa isLocatedIn;
                         '''
-                        tx.query().insert(query)
+                        tx.query.insert(query)
                         
                         processed_rows += 1
                         
@@ -373,8 +373,8 @@ def load_posts(client, batch_size=10000):
         
         pbar.close()
 
-def load_comments(client, batch_size=10000):
-    with client.session("ldbcsnb", SessionType.DATA) as session:
+def load_comments(driver, batch_size=10000):
+    with driver.session("ldbcsnb", SessionType.DATA) as session:
         directory = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic", "Comment")
 
         
@@ -429,7 +429,7 @@ def load_comments(client, batch_size=10000):
                             {parent_relation}
                         '''
                         
-                        tx.query().insert(query)
+                        tx.query.insert(query)
                         processed_rows += 1
                         
                         # Commit and start a new transaction if batch size is reached
@@ -448,7 +448,7 @@ def load_comments(client, batch_size=10000):
         pbar.close()
 
 
-def load_comment_hasTag_Tag(client, directory, batch_size=1000):
+def load_comment_hasTag_Tag(driver, directory, batch_size=1000):
     # Estimate total rows (this is a rough estimate, assuming average file sizes)
     total_rows = count_rows_in_directory(directory)
     pbar = tqdm(total=total_rows, desc="Processed rows")
@@ -462,7 +462,7 @@ def load_comment_hasTag_Tag(client, directory, batch_size=1000):
                 csv_reader = csv.reader(csv_file, delimiter='|')
                 next(csv_reader)  # Skip the header
 
-                with client.session("ldbcsnb", SessionType.DATA) as session:
+                with driver.session("ldbcsnb", SessionType.DATA) as session:
                     tx = session.transaction(TransactionType.WRITE)  # Start the first transaction
                     
                     for row in csv_reader:
@@ -474,7 +474,7 @@ def load_comment_hasTag_Tag(client, directory, batch_size=1000):
                             (tag: $tag, tagged: $comment) isa hasTag;
                         '''
                         
-                        tx.query().insert(query)
+                        tx.query.insert(query)
                         processed_rows += 1
                         
                         # Commit and start a new transaction if batch size is reached
@@ -492,7 +492,7 @@ def load_comment_hasTag_Tag(client, directory, batch_size=1000):
 
     pbar.close()
 
-def load_forum_hasMember_Person(client, directory, batch_size=1000):
+def load_forum_hasMember_Person(driver, directory, batch_size=1000):
     # Estimate total rows (this is a rough estimate, assuming average file sizes)
     total_rows = count_rows_in_directory(directory)
     pbar = tqdm(total=total_rows, desc="Processed rows")
@@ -506,7 +506,7 @@ def load_forum_hasMember_Person(client, directory, batch_size=1000):
                 csv_reader = csv.reader(csv_file, delimiter='|')
                 next(csv_reader)  # Skip the header
 
-                with client.session("ldbcsnb", SessionType.DATA) as session:
+                with driver.session("ldbcsnb", SessionType.DATA) as session:
                     tx = session.transaction(TransactionType.WRITE)  # Start the first transaction
                     
                     for row in csv_reader:
@@ -523,7 +523,7 @@ def load_forum_hasMember_Person(client, directory, batch_size=1000):
                             $relation has creationDate {formatted_date};
                         '''
                         
-                        tx.query().insert(query)
+                        tx.query.insert(query)
                         processed_rows += 1
                         
                         # Commit and start a new transaction if batch size is reached
@@ -541,7 +541,7 @@ def load_forum_hasMember_Person(client, directory, batch_size=1000):
 
     pbar.close()
 
-def load_forum_hasTag_Tag(client, directory, batch_size=1000):
+def load_forum_hasTag_Tag(driver, directory, batch_size=1000):
     # Estimate total rows (this is a rough estimate, assuming average file sizes)
     total_rows = count_rows_in_directory(directory)
     pbar = tqdm(total=total_rows, desc="Processed rows")
@@ -555,7 +555,7 @@ def load_forum_hasTag_Tag(client, directory, batch_size=1000):
                 csv_reader = csv.reader(csv_file, delimiter='|')
                 next(csv_reader)  # Skip the header
 
-                with client.session("ldbcsnb", SessionType.DATA) as session:
+                with driver.session("ldbcsnb", SessionType.DATA) as session:
                     tx = session.transaction(TransactionType.WRITE)  # Start the first transaction
                     
                     for row in csv_reader:
@@ -572,7 +572,7 @@ def load_forum_hasTag_Tag(client, directory, batch_size=1000):
                             $relation has creationDate {formatted_date};
                         '''
                         
-                        tx.query().insert(query)
+                        tx.query.insert(query)
                         processed_rows += 1
                         
                         # Commit and start a new transaction if batch size is reached
@@ -588,7 +588,7 @@ def load_forum_hasTag_Tag(client, directory, batch_size=1000):
 
     pbar.close()
 
-def load_person_hasInterest_Tag(client, directory, batch_size=1000):
+def load_person_hasInterest_Tag(driver, directory, batch_size=1000):
     # Estimate total rows (this is a rough estimate, assuming average file sizes)
     total_rows = count_rows_in_directory(directory)
     pbar = tqdm(total=total_rows, desc="Processed rows")
@@ -602,7 +602,7 @@ def load_person_hasInterest_Tag(client, directory, batch_size=1000):
                 csv_reader = csv.reader(csv_file, delimiter='|')
                 next(csv_reader)  # Skip the header
 
-                with client.session("ldbcsnb", SessionType.DATA) as session:
+                with driver.session("ldbcsnb", SessionType.DATA) as session:
                     tx = session.transaction(TransactionType.WRITE)  # Start the first transaction
                     
                     for row in csv_reader:
@@ -619,7 +619,7 @@ def load_person_hasInterest_Tag(client, directory, batch_size=1000):
                             $relation has creationDate {formatted_date};
                         '''
                         
-                        tx.query().insert(query)
+                        tx.query.insert(query)
                         processed_rows += 1
                         
                         # Commit and start a new transaction if batch size is reached
@@ -635,7 +635,7 @@ def load_person_hasInterest_Tag(client, directory, batch_size=1000):
 
     pbar.close()
 
-def load_person_knows_person(client, directory, batch_size=1000):
+def load_person_knows_person(driver, directory, batch_size=1000):
     # Estimate total rows (this is a rough estimate, assuming average file sizes)
     total_rows = count_rows_in_directory(directory)
     pbar = tqdm(total=total_rows, desc="Processed rows")
@@ -649,7 +649,7 @@ def load_person_knows_person(client, directory, batch_size=1000):
                 csv_reader = csv.reader(csv_file, delimiter='|')
                 next(csv_reader)  # Skip the header
 
-                with client.session("ldbcsnb", SessionType.DATA) as session:
+                with driver.session("ldbcsnb", SessionType.DATA) as session:
                     tx = session.transaction(TransactionType.WRITE)  # Start the first transaction
                     
                     for row in csv_reader:
@@ -666,7 +666,7 @@ def load_person_knows_person(client, directory, batch_size=1000):
                             $relation has creationDate {formatted_date};
                         '''
                         
-                        tx.query().insert(query)
+                        tx.query.insert(query)
                         processed_rows += 1
                         
                         # Commit and start a new transaction if batch size is reached
@@ -682,7 +682,7 @@ def load_person_knows_person(client, directory, batch_size=1000):
 
     pbar.close()
 
-def load_person_likes_comment(client, directory, batch_size=1000):
+def load_person_likes_comment(driver, directory, batch_size=1000):
     # Estimate total rows
     total_rows = count_rows_in_directory(directory)
     pbar = tqdm(total=total_rows, desc="Processed rows")
@@ -696,7 +696,7 @@ def load_person_likes_comment(client, directory, batch_size=1000):
                 csv_reader = csv.reader(csv_file, delimiter='|')
                 next(csv_reader)  # Skip the header
 
-                with client.session("ldbcsnb", SessionType.DATA) as session:
+                with driver.session("ldbcsnb", SessionType.DATA) as session:
                     tx = session.transaction(TransactionType.WRITE)  # Start the first transaction
 
                     for row in csv_reader:
@@ -713,7 +713,7 @@ def load_person_likes_comment(client, directory, batch_size=1000):
                             $relation has creationDate {formatted_date};
                         '''
 
-                        tx.query().insert(query)
+                        tx.query.insert(query)
                         processed_rows += 1
 
                         # Commit and start a new transaction if batch size is reached
@@ -729,7 +729,7 @@ def load_person_likes_comment(client, directory, batch_size=1000):
 
     pbar.close()
 
-def load_person_likes_post(client, directory, batch_size=1000):
+def load_person_likes_post(driver, directory, batch_size=1000):
     # Estimate total rows
     total_rows = count_rows_in_directory(directory)
     pbar = tqdm(total=total_rows, desc="Processed rows")
@@ -743,7 +743,7 @@ def load_person_likes_post(client, directory, batch_size=1000):
                 csv_reader = csv.reader(csv_file, delimiter='|')
                 next(csv_reader)  # Skip the header
 
-                with client.session("ldbcsnb", SessionType.DATA) as session:
+                with driver.session("ldbcsnb", SessionType.DATA) as session:
                     tx = session.transaction(TransactionType.WRITE)  # Start the first transaction
 
                     for row in csv_reader:
@@ -760,7 +760,7 @@ def load_person_likes_post(client, directory, batch_size=1000):
                             $relation has creationDate {formatted_date};
                         '''
 
-                        tx.query().insert(query)
+                        tx.query.insert(query)
                         processed_rows += 1
 
                         # Commit and start a new transaction if batch size is reached
@@ -776,14 +776,14 @@ def load_person_likes_post(client, directory, batch_size=1000):
 
     pbar.close()
 
-def load_person_studyAt_university(client, directory, batch_size=1000):
+def load_person_studyAt_university(driver, directory, batch_size=1000):
     # Estimate total rows
     total_rows = count_rows_in_directory(directory)
     pbar = tqdm(total=total_rows, desc="Processed rows")
     
     processed_rows = 0
 
-    with client.session("ldbcsnb", SessionType.DATA) as session:
+    with driver.session("ldbcsnb", SessionType.DATA) as session:
         for filename in os.listdir(directory):
             if filename.endswith('.csv'):
                 filepath = os.path.join(directory, filename)
@@ -808,7 +808,7 @@ def load_person_studyAt_university(client, directory, batch_size=1000):
                             $relation has classYear {row[3]};
                         '''
 
-                        tx.query().insert(query)
+                        tx.query.insert(query)
                         processed_rows += 1
 
                         # Commit and start a new transaction if batch size is reached
@@ -824,7 +824,7 @@ def load_person_studyAt_university(client, directory, batch_size=1000):
 
     pbar.close()
 
-def load_person_workAt_company(client, directory, batch_size=1000):
+def load_person_workAt_company(driver, directory, batch_size=1000):
     # Estimate total rows
     total_rows = count_rows_in_directory(directory)
     pbar = tqdm(total=total_rows, desc="Processed rows")
@@ -838,7 +838,7 @@ def load_person_workAt_company(client, directory, batch_size=1000):
                 csv_reader = csv.reader(csv_file, delimiter='|')
                 next(csv_reader)  # Skip the header
 
-                with client.session("ldbcsnb", SessionType.DATA) as session:
+                with driver.session("ldbcsnb", SessionType.DATA) as session:
                     tx = session.transaction(TransactionType.WRITE)  # Start the first transaction
 
                     for row in csv_reader:
@@ -856,7 +856,7 @@ def load_person_workAt_company(client, directory, batch_size=1000):
                             $relation has workFrom {row[3]};
                         '''
 
-                        tx.query().insert(query)
+                        tx.query.insert(query)
                         processed_rows += 1
 
                         # Commit and start a new transaction if batch size is reached
@@ -872,7 +872,7 @@ def load_person_workAt_company(client, directory, batch_size=1000):
 
     pbar.close()
 
-def load_post_hasTag_tag(client, directory, batch_size=1000):
+def load_post_hasTag_tag(driver, directory, batch_size=1000):
     # Estimate total rows
     total_rows = count_rows_in_directory(directory)
     pbar = tqdm(total=total_rows, desc="Processed rows")
@@ -886,7 +886,7 @@ def load_post_hasTag_tag(client, directory, batch_size=1000):
                 csv_reader = csv.reader(csv_file, delimiter='|')
                 next(csv_reader)  # Skip the header
 
-                with client.session("ldbcsnb", SessionType.DATA) as session:
+                with driver.session("ldbcsnb", SessionType.DATA) as session:
                     tx = session.transaction(TransactionType.WRITE)  # Start the first transaction
 
                     for row in csv_reader:
@@ -903,7 +903,7 @@ def load_post_hasTag_tag(client, directory, batch_size=1000):
                             $relation has creationDate {formatted_date};
                         '''
 
-                        tx.query().insert(query)
+                        tx.query.insert(query)
                         processed_rows += 1
 
                         # Commit and start a new transaction if batch size is reached
@@ -919,47 +919,47 @@ def load_post_hasTag_tag(client, directory, batch_size=1000):
 
     pbar.close()
 
-def load_relations(client, start_time):
+def load_relations(driver, start_time):
     ROOT_DYNAMIC = os.path.join(ROOT, "data", f"out-sf{SF}", "graphs", "csv", "bi", "composite-merged-fk", "initial_snapshot", "dynamic")
     batchsize = 10000
     # Load Comment_hasTag_Tag
-    load_comment_hasTag_Tag(client, os.path.join(ROOT_DYNAMIC, "Comment_hasTag_Tag"),batchsize)
+    load_comment_hasTag_Tag(driver, os.path.join(ROOT_DYNAMIC, "Comment_hasTag_Tag"),batchsize)
     print_elapsed_time(start_time, "Loaded Comment_hasTag_Tag")
 
     # Load Forum_hasMember_Person
-    load_forum_hasMember_Person(client, os.path.join(ROOT_DYNAMIC, "Forum_hasMember_Person"),batchsize)
+    load_forum_hasMember_Person(driver, os.path.join(ROOT_DYNAMIC, "Forum_hasMember_Person"),batchsize)
     print_elapsed_time(start_time, "Loaded Forum_hasMember_Person")
 
     # Load Forum_hasTag_Tag
-    load_forum_hasTag_Tag(client, os.path.join(ROOT_DYNAMIC, "Forum_hasTag_Tag"),batchsize)
+    load_forum_hasTag_Tag(driver, os.path.join(ROOT_DYNAMIC, "Forum_hasTag_Tag"),batchsize)
     print_elapsed_time(start_time, "Loaded Forum_hasTag_Tag")
 
     # Load Person_hasInterest_Tag
-    load_person_hasInterest_Tag(client, os.path.join(ROOT_DYNAMIC, "Person_hasInterest_Tag"),batchsize)
+    load_person_hasInterest_Tag(driver, os.path.join(ROOT_DYNAMIC, "Person_hasInterest_Tag"),batchsize)
     print_elapsed_time(start_time, "Loaded Person_hasInterest_Tag")
 
     # Load Person_knows_Person
-    load_person_knows_person(client, os.path.join(ROOT_DYNAMIC, "Person_knows_Person"),batchsize)
+    load_person_knows_person(driver, os.path.join(ROOT_DYNAMIC, "Person_knows_Person"),batchsize)
     print_elapsed_time(start_time, "Loaded Person_knows_Person")
 
     # Load Person_likes_Comment
-    load_person_likes_comment(client, os.path.join(ROOT_DYNAMIC, "Person_likes_Comment"),batchsize)
+    load_person_likes_comment(driver, os.path.join(ROOT_DYNAMIC, "Person_likes_Comment"),batchsize)
     print_elapsed_time(start_time, "Loaded Person_likes_Comment")
 
     # Load Person_likes_Post
-    load_person_likes_post(client, os.path.join(ROOT_DYNAMIC, "Person_likes_Post"),batchsize)
+    load_person_likes_post(driver, os.path.join(ROOT_DYNAMIC, "Person_likes_Post"),batchsize)
     print_elapsed_time(start_time, "Loaded Person_likes_Post")
 
     # Load Person_studyAt_University
-    load_person_studyAt_university(client, os.path.join(ROOT_DYNAMIC, "Person_studyAt_University"),batchsize)
+    load_person_studyAt_university(driver, os.path.join(ROOT_DYNAMIC, "Person_studyAt_University"),batchsize)
     print_elapsed_time(start_time, "Loaded Person_studyAt_University")
 
     # Load Person_workAt_Company
-    load_person_workAt_company(client, os.path.join(ROOT_DYNAMIC, "Person_workAt_Company"),batchsize)
+    load_person_workAt_company(driver, os.path.join(ROOT_DYNAMIC, "Person_workAt_Company"),batchsize)
     print_elapsed_time(start_time, "Loaded Person_workAt_Company")
 
     # Load Post_hasTag_Tag
-    load_post_hasTag_tag(client, os.path.join(ROOT_DYNAMIC, "Post_hasTag_Tag"),batchsize)
+    load_post_hasTag_tag(driver, os.path.join(ROOT_DYNAMIC, "Post_hasTag_Tag"),batchsize)
     print_elapsed_time(start_time, "Loaded Post_hasTag_Tag")
 
 def print_elapsed_time(start_time, message):
@@ -969,51 +969,51 @@ def print_elapsed_time(start_time, message):
 def main():
     start_time = time.time()
     # Connect to the TypeDB server
-    with TypeDB.core_client("localhost:1729", 8) as client:
+    with TypeDB.core_driver("localhost:1729") as driver:
         # Check if the database exists
-        if client.databases().contains("ldbcsnb"):
-            client.databases().get("ldbcsnb").delete()
+        if driver.databases.contains("ldbcsnb"):
+            driver.databases.get("ldbcsnb").delete()
         # Create a TypeDB database
-        client.databases().create("ldbcsnb")
+        driver.databases.create("ldbcsnb")
         # print("hi")
-        with client.session("ldbcsnb", SessionType.SCHEMA) as session:
+        with driver.session("ldbcsnb", SessionType.SCHEMA) as session:
             with open("schema.tql", "r") as schema:
                 with session.transaction(TransactionType.WRITE) as tx:
                     query = schema.read()
-                    tx.query().define(query)
+                    tx.query.define(query)
                     tx.commit()
 
         print("schema,",time.time() - start_time)
         # #static
-        load_place(client)
+        load_place(driver)
         print_elapsed_time(start_time, "Loaded Place")
         
-        load_organization(client)
+        load_organization(driver)
         print_elapsed_time(start_time, "Loaded Organization")
         
-        load_tagclass(client)
+        load_tagclass(driver)
         print_elapsed_time(start_time, "Loaded TagClass")
         
-        load_tags(client, 10000)
+        load_tags(driver, 10000)
         print_elapsed_time(start_time, "Loaded Tags")
 
         print_elapsed_time(start_time, "Loaded Static Data")        
         
         # dynamic
         
-        load_person(client, 10000)
+        load_person(driver, 10000)
         print_elapsed_time(start_time, "Loaded Person")
 
-        load_forum(client, 10000)
+        load_forum(driver, 10000)
         print_elapsed_time(start_time, "Loaded Forum")
         
-        load_posts(client,10000)
+        load_posts(driver,10000)
         print_elapsed_time(start_time, "Loaded Posts") 
         
-        load_comments(client, 10000)
+        load_comments(driver, 10000)
         print_elapsed_time(start_time, "Loaded Comments")
         
-        load_relations(client, start_time)
+        load_relations(driver, start_time)
         print_elapsed_time(start_time, "Loaded Relations")
         
         print_elapsed_time(start_time, "Loaded Dynamic Data")

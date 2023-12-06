@@ -247,66 +247,66 @@ public abstract class QueryStore {
     //     .build();
     // }
 
-    /**
-     * Get prepared Query7 string
-     * @param operation LdbcQuery7 operation containing parameter values
-     * @return Prepared Query7 string
-     */
-    public String getQuery7(LdbcQuery7 operation) {
-        return prepare(QueryType.InteractiveComplexQuery7, getQuery7Map(operation));
-    }
+    // /**
+    //  * Get prepared Query7 string
+    //  * @param operation LdbcQuery7 operation containing parameter values
+    //  * @return Prepared Query7 string
+    //  */
+    // public String getQuery7(LdbcQuery7 operation) {
+    //     return prepare(QueryType.InteractiveComplexQuery7, getQuery7Map(operation));
+    // }
 
-    /**
-     * Get Query7 Map. This map contain the name of the parameter and the value as string.
-     * @param operation LdbcQuery7 operation containing parameter values
-     * @return Map with parameters and values as string.
-     */
-    public Map<String, Object> getQuery7Map(LdbcQuery7 operation) {
-        return new ImmutableMap.Builder<String, Object>()
-        .put(LdbcQuery7.PERSON_ID, getConverter().convertId(operation.getPersonIdQ7()))
-        .build();
-    }
+    // /**
+    //  * Get Query7 Map. This map contain the name of the parameter and the value as string.
+    //  * @param operation LdbcQuery7 operation containing parameter values
+    //  * @return Map with parameters and values as string.
+    //  */
+    // public Map<String, Object> getQuery7Map(LdbcQuery7 operation) {
+    //     return new ImmutableMap.Builder<String, Object>()
+    //     .put(LdbcQuery7.PERSON_ID, getConverter().convertId(operation.getPersonIdQ7()))
+    //     .build();
+    // }
 
-    /**
-     * Get prepared Query8 string
-     * @param operation LdbcQuery8 operation containing parameter values
-     * @return Prepared Query8 string
-     */
-    public String getQuery8(LdbcQuery8 operation) {
-        return prepare(QueryType.InteractiveComplexQuery8, getQuery8Map(operation));
-    }
+    // /**
+    //  * Get prepared Query8 string
+    //  * @param operation LdbcQuery8 operation containing parameter values
+    //  * @return Prepared Query8 string
+    //  */
+    // public String getQuery8(LdbcQuery8 operation) {
+    //     return prepare(QueryType.InteractiveComplexQuery8, getQuery8Map(operation));
+    // }
 
-    /**
-     * Get Query8 Map. This map contain the name of the parameter and the value as string.
-     * @param operation LdbcQuery8 operation containing parameter values
-     * @return Map with parameters and values as string.
-     */
-    public Map<String, Object> getQuery8Map(LdbcQuery8 operation) {
-        return new ImmutableMap.Builder<String, Object>()
-        .put(LdbcQuery8.PERSON_ID, getConverter().convertId(operation.getPersonIdQ8()))
-        .build();
-    }
+    // /**
+    //  * Get Query8 Map. This map contain the name of the parameter and the value as string.
+    //  * @param operation LdbcQuery8 operation containing parameter values
+    //  * @return Map with parameters and values as string.
+    //  */
+    // public Map<String, Object> getQuery8Map(LdbcQuery8 operation) {
+    //     return new ImmutableMap.Builder<String, Object>()
+    //     .put(LdbcQuery8.PERSON_ID, getConverter().convertId(operation.getPersonIdQ8()))
+    //     .build();
+    // }
 
-    /**
-     * Get prepared Query9 string
-     * @param operation LdbcQuery9 operation containing parameter values
-     * @return Prepared Query9 string
-     */
-    public String getQuery9(LdbcQuery9 operation) {
-        return prepare(QueryType.InteractiveComplexQuery9, getQuery9Map(operation));
-    }
+    // /**
+    //  * Get prepared Query9 string
+    //  * @param operation LdbcQuery9 operation containing parameter values
+    //  * @return Prepared Query9 string
+    //  */
+    // public String getQuery9(LdbcQuery9 operation) {
+    //     return prepare(QueryType.InteractiveComplexQuery9, getQuery9Map(operation));
+    // }
 
-    /**
-     * Get Query9 Map. This map contain the name of the parameter and the value as string.
-     * @param operation LdbcQuery9 operation containing parameter values
-     * @return Map with parameters and values as string.
-     */
-    public Map<String, Object> getQuery9Map(LdbcQuery9 operation) {
-        return new ImmutableMap.Builder<String, Object>()
-        .put(LdbcQuery9.PERSON_ID, getConverter().convertId(operation.getPersonIdQ9()))
-        .put(LdbcQuery9.MAX_DATE, getConverter().convertDate(operation.getMaxDate()))
-        .build();
-    }
+    // /**
+    //  * Get Query9 Map. This map contain the name of the parameter and the value as string.
+    //  * @param operation LdbcQuery9 operation containing parameter values
+    //  * @return Map with parameters and values as string.
+    //  */
+    // public Map<String, Object> getQuery9Map(LdbcQuery9 operation) {
+    //     return new ImmutableMap.Builder<String, Object>()
+    //     .put(LdbcQuery9.PERSON_ID, getConverter().convertId(operation.getPersonIdQ9()))
+    //     .put(LdbcQuery9.MAX_DATE, getConverter().convertDate(operation.getMaxDate()))
+    //     .build();
+    // }
 
     // /**
     //  * Get prepared Query10 string
@@ -436,25 +436,25 @@ public abstract class QueryStore {
     //     .build();
     // }
 
-    // /**
-    //  * Get prepared LdbcShortQuery1PersonProfile string
-    //  * @param operation LdbcShortQuery1PersonProfile operation containing parameter values
-    //  * @return Prepared LdbcShortQuery1PersonProfile string
-    //  */
-    // public String getShortQuery1PersonProfile(LdbcShortQuery1PersonProfile operation) {
-    //     return prepare(
-    //             QueryType.InteractiveShortQuery1,getShortQuery1PersonProfileMap(operation)
-    //     );
-    // }
+    /**
+     * Get prepared LdbcShortQuery1PersonProfile string
+     * @param operation LdbcShortQuery1PersonProfile operation containing parameter values
+     * @return Prepared LdbcShortQuery1PersonProfile string
+     */
+    public String getShortQuery1PersonProfile(LdbcShortQuery1PersonProfile operation) {
+        return prepare(
+                QueryType.InteractiveShortQuery1,getShortQuery1PersonProfileMap(operation)
+        );
+    }
 
-    // /**
-    //  * Get LdbcShortQuery1PersonProfile Map. This map contain the name of the parameter and the value as string.
-    //  * @param operation LdbcShortQuery1PersonProfile operation containing parameter values
-    //  * @return Map with parameters and values as string.
-    //  */
-    // public Map<String, Object> getShortQuery1PersonProfileMap(LdbcShortQuery1PersonProfile operation) {
-    //     return ImmutableMap.of(LdbcShortQuery1PersonProfile.PERSON_ID, getConverter().convertId(operation.getPersonIdSQ1()));
-    // }
+    /**
+     * Get LdbcShortQuery1PersonProfile Map. This map contain the name of the parameter and the value as string.
+     * @param operation LdbcShortQuery1PersonProfile operation containing parameter values
+     * @return Map with parameters and values as string.
+     */
+    public Map<String, Object> getShortQuery1PersonProfileMap(LdbcShortQuery1PersonProfile operation) {
+        return ImmutableMap.of(LdbcShortQuery1PersonProfile.PERSON_ID, getConverter().convertId(operation.getPersonIdSQ1()));
+    }
 
     // /**
     //  * Get prepared LdbcShortQuery2PersonPosts string
