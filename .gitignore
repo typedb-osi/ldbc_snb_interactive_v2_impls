@@ -30,3 +30,11 @@ parameters-sf*.*
 update-streams-sf*/
 update-streams-sf*.*
 initial-snapshot/*
+
+postgres/data/**
+typeql/data/**
+cypher/data/**
+snb-out-sf1-merged-fk.tar
+snb-out-sf1-merged-fk.tar.zst
+typeql/data1/**
+typeql/data.typedb
